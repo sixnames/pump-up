@@ -1,0 +1,9 @@
+package.json
+node_modules
+public
+.next
+output
+db
+db-backup
+word-templates
+Makefile

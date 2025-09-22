@@ -24,13 +24,16 @@
     ],
     "paths": {
       "@/*": [
-        "./src/*"
+        "./*"
       ],
       "@payload-config": [
-        "./src/payload.config.ts"
+        "./payload.config.ts"
       ]
     },
     "target": "ES2022",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "next-env.d.ts",
@@ -40,5 +43,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
+  ]
 }
