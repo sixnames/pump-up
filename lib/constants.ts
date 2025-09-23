@@ -1,5 +1,10 @@
 export const STANDARD_ERROR_MESSAGE = 'Упс! Щос пійшло не так. Зверніться до разробника.';
 
+// TOAST TYPES
+export const TOAST_SUCCESS = 'default';
+export const TOAST_ERROR = 'destructive';
+export const TOAST_WARNING = 'warning';
+
 export const NUM_WORDS = [
   'один',
   'два',

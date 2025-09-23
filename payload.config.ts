@@ -18,6 +18,13 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    autoLogin:
+      process.env.NODE_ENV === 'development'
+        ? {
+            username: process.env.DEV_ADMIN_USERNAME,
+            password: process.env.DEV_ADMIN_PASSWORD,
+          }
+        : false,
   },
   collections: [Users],
   editor: lexicalEditor(),
