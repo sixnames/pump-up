@@ -5,7 +5,7 @@ import path from 'path';
 import { buildConfig } from 'payload';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
-
+import { Media } from './collections/Media';
 import { Users } from './collections/Users';
 
 const filename = fileURLToPath(import.meta.url);
@@ -18,6 +18,13 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      beforeNavLinks: ['/components/admin/MainLink'],
+      graphics: {
+        Icon: '/components/common/Logo',
+        Logo: '/components/admin/AdminLogo',
+      },
+    },
     autoLogin:
       process.env.NODE_ENV === 'development'
         ? {
@@ -26,7 +33,7 @@ export default buildConfig({
           }
         : false,
   },
-  collections: [Users],
+  collections: [Users, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

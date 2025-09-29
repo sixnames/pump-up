@@ -91,7 +91,7 @@ export function AppSidebar() {
                   hidden: collapsed,
                 })}
               >
-                app name
+                Pump Up
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

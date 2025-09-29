@@ -359,6 +359,10 @@
 }
 
 :root {
+
+  --logo-weight: #222; /* weight (disks) color */
+  --logo-shadow: rgba(0, 0, 0, 0.08);
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -431,7 +435,29 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.ring-fg {
+  fill: none;
+  stroke: #FF6B3A;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform-origin: 60px 60px;
+  transform: rotate(-90deg);
+}
+
+.bar {
+  fill: #222;
+}
+
+.disk {
+  fill: var(--logo-weight);
+}
+
+.bar-shadow {
+  fill: var(--logo-shadow);
 }

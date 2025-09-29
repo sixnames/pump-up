@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'One Day',
+  title: 'Pump Up',
 };
 
 export const dynamic = 'force-dynamic';
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         colorScheme: themeValue,
       }}
     >
-      <body>
+      <body className={'bg-white'}>
         <QueryProvider>
           <ThemeProvider defaultTheme={'dark'} attribute={'class'} disableTransitionOnChange>
             <LoaderContextProvider>

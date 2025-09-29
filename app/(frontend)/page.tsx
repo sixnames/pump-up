@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
 
-const title = `One Day`;
+const title = `Pump Up`;
 
 export const metadata: Metadata = {
   title,
