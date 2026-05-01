@@ -27,9 +27,9 @@ export default buildConfig({
     autoLogin:
       process.env.NODE_ENV === 'development'
         ? {
-            username: process.env.DEV_ADMIN_USERNAME,
-            password: process.env.DEV_ADMIN_PASSWORD,
-          }
+          username: process.env.DEV_ADMIN_USERNAME,
+          password: process.env.DEV_ADMIN_PASSWORD,
+        }
         : false,
   },
   globals: [],
@@ -44,7 +44,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.MONGODB_URI || '',
     connectOptions: {
-      dbName: process.env.MONGO_DB_NAME || '',
+      dbName: process.env.MONGO_PU_DB_NAME || '',
       ignoreUndefined: false,
     },
   }),

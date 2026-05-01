@@ -10,7 +10,7 @@ import { getPayload } from 'payload';
     throw new Error('Cold start is not allowed');
   }
 
-  const dbName = process.env.MONGO_DB_NAME;
+  const dbName = process.env.MONGO_PU_DB_NAME;
   const uri = process.env.MONGODB_URI;
 
   if (!dbName || !uri) {
