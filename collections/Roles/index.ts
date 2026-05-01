@@ -1,6 +1,6 @@
 import { BooleanField } from '@/collections/commonFields';
 import { getCreateAccess, getDeleteAccess, getReadAccess, getUpdateAccess } from '@/collections/Roles/utils';
-import { questionnairiesSlug, rolesSlug } from '@/lib/collectionNames';
+import { rolesSlug } from '@/lib/collectionNames';
 import { alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { CollectionConfig, Field } from 'payload';
@@ -13,7 +13,7 @@ const ruleCollections = [
   },
 ];
 
-export const ruleCollectionSlugs = [questionnairiesSlug, rolesSlug] as const;
+export const ruleCollectionSlugs = [rolesSlug] as const;
 
 export const roleRuleActions = [
   {
@@ -51,7 +51,12 @@ const ruleCollectionFields: Field[] = ruleCollections.map((collection) => {
 });
 
 export type RolePermissionSlug = (typeof ruleCollectionSlugs)[number];
-export type RolePermissionOperation = 'create' | 'read' | 'update' | 'delete' | 'generate';
+export type RolePermissionOperation =
+  'create'
+  | 'read'
+  | 'update'
+  | 'delete'
+  | 'generate';
 
 export const Roles: CollectionConfig = {
   slug: rolesSlug,
