@@ -48,7 +48,7 @@ function OdBreadcrumbs({ breadcrumbs }: OdBreadcrumbsProps) {
           if (isLast) {
             return (
               <BreadcrumbItem key={index}>
-                <BreadcrumbPage>{title}</BreadcrumbPage>
+                <BreadcrumbPage tabIndex={-1}>{title}</BreadcrumbPage>
               </BreadcrumbItem>
             );
           }
@@ -57,7 +57,7 @@ function OdBreadcrumbs({ breadcrumbs }: OdBreadcrumbsProps) {
             <React.Fragment key={index}>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link data-cy={`breadcrumbs-${testId}`} href={url}>
+                  <Link data-cy={`breadcrumbs-${testId}`} href={url} tabIndex={-1}>
                     {title}
                   </Link>
                 </BreadcrumbLink>
@@ -78,9 +78,19 @@ interface TitleProps extends OdBreadcrumbsProps {
   children: React.ReactNode;
   subNav?: Record<string, UrlConfigNoIconItem | undefined>;
   showCreateButton?: boolean;
+  hideBackButton?: boolean;
 }
 
-export default function OdTitle({ children, className, testId, subNav, breadcrumbs, titleClassName, showCreateButton }: TitleProps) {
+export default function OdTitle({
+  children,
+  className,
+  testId,
+  subNav,
+  breadcrumbs,
+  titleClassName,
+  showCreateButton,
+  hideBackButton,
+}: TitleProps) {
   const { back, push } = useRouter();
   const pathname = usePathname();
 
@@ -94,13 +104,18 @@ export default function OdTitle({ children, className, testId, subNav, breadcrum
       <OdBreadcrumbs breadcrumbs={breadcrumbs} />
 
       <div className={'flex items-center gap-4'}>
-        {pathname !== '/' ? (
-          <Button variant='outline' size='icon' className='h-7 w-7' type={'button'} onClick={back}>
+        {pathname !== '/' && !hideBackButton ? (
+          <Button variant='outline' size='icon' className='h-7 w-7' type={'button'} onClick={back} tabIndex={-1}>
             <ChevronLeft className='h-4 w-4' />
             <span className='sr-only'>Назад</span>
           </Button>
         ) : null}
-        <h1 className={cn(`flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0`, titleClassName)}>
+        <h1
+          className={cn(
+            `flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0`,
+            titleClassName,
+          )}
+        >
           {children}
         </h1>
         <div className={'ml-auto'}>

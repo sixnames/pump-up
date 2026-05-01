@@ -1,4 +1,4 @@
-import { OdUrl } from '@/@types/common-types';
+import { CollectionNames, OdUrl } from '@/@types/common-types';
 import { NavIconVariant } from '@/components/common/NavIcon';
 import { alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
@@ -21,6 +21,16 @@ export function extractUrlString(href: string | Record<any, any>): string {
   return '';
 }
 
+type ParseOriginUrlItem = {
+  children: {
+    upload: UrlConfigNoIconItem & {
+      children: {
+        positions: UrlConfigNoIconItem;
+      };
+    };
+  };
+} & UrlConfigItem;
+
 export type UrlConfigItem = {
   title: string;
   url: OdUrl;
@@ -33,9 +43,7 @@ export type UrlConfigNoIconItem = Omit<UrlConfigItem, 'icon'>;
 export type UrlConfig = {
   app: {
     title: string;
-    links: {
-      notifications: UrlConfigItem;
-    };
+    links: {};
   };
   console: {
     title: string;
@@ -50,14 +58,7 @@ const navLikTestIdPrefix = 'nav-link';
 export const urlConfig: UrlConfig = {
   app: {
     title: fieldLabels.main.plural,
-    links: {
-      notifications: {
-        title: fieldLabels.notifications.singular,
-        url: '/notifications',
-        icon: 'notifications',
-        testId: `${navLikTestIdPrefix}-notifications`,
-      },
-    },
+    links: {},
   },
   console: {
     title: fieldLabels.settings.singular,
@@ -74,10 +75,14 @@ export const urlConfig: UrlConfig = {
 
 // admin
 interface GetAdminUrlParams {
-  collection: string;
+  collection: CollectionNames;
   id: string;
 }
 
 export function getAdminItemUrl({ collection, id }: GetAdminUrlParams) {
   return `/admin/collections/${collection}/${id}`;
+}
+
+export function getAdminCreateItemUrl({ collection }: Omit<GetAdminUrlParams, 'id'>) {
+  return `/admin/collections/${collection}/create`;
 }

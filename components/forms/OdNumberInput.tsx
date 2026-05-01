@@ -9,7 +9,7 @@ export default function OdNumberInput(props: OdNumberInputProps) {
   return (
     <OdInput
       {...props}
-      type='number'
+      type="number"
       onChangeCallback={(value) => {
         const number = alwaysNumber(value, 0);
         if (number === 0) {

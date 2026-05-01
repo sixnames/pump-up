@@ -12,6 +12,7 @@ interface OdLinkProps {
   testId?: string;
   role?: string;
   prefetch?: boolean;
+  tabIndex?: number;
   target?: HTMLAttributeAnchorTarget | undefined;
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
   ariaLabel?: string;

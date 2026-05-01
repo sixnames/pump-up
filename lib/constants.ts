@@ -1,9 +1,42 @@
-export const STANDARD_ERROR_MESSAGE = 'Упс! Щос пійшло не так. Зверніться до разробника.';
+import { SelectDataItem } from '@/@types/common-types';
+import { getToday } from '@/lib/dateUtils';
+
+// event variant ast block slugs
+export const eventVariantTextBlockSlug = 'eventVariantTextBlock';
+export const eventVariantGroupBlockSlug = 'eventVariantGroupBlock';
+export const eventVariantUnitsBlockSlug = 'eventVariantUnitsBlock';
+export const eventVariantTeamBlockSlug = 'eventVariantTeamBlock';
+export const eventVariantCustomLinesBlockSlug = 'eventVariantCustomLinesBlock';
+export const eventVariantSignersBlockSlug = 'eventVariantSignersBlock';
+export const eventVariantCompanySignerBlockSlug = 'eventVariantCompanySignerBlock';
+export const eventVariantPageBreakBlockSlug = 'eventVariantPageBreakBlock';
+export const eventVariantTeamPaymentBlockSlug = 'eventVariantTeamPaymentBlock';
+export const eventVariantLostProductsBlockSlug = 'eventVariantLostProductsBlock';
+
+// event unit queries
+export const unitEventsSort = ['-dayDate', '-eventDate', '-createdAt'];
+export const UNIT_INDEX_PLACEHOLDER = `{unitIndex}`;
+export const UNIT_FIELD_PATH_PLACEHOLDER = `units[${UNIT_INDEX_PLACEHOLDER}]`;
+
+export const STANDARD_ERROR_MESSAGE = 'Упс! Щос пішло не так. Зверніться до разробника.';
+
+// SORT
+export const DEFAULT_SORT_ORDER = 1;
+export const SORT_ASC_STR = 'asc';
+export const SORT_DESC_STR = 'desc';
+
+// PAGINATION
+export const COMBO_LIMIT = 50;
+export const DEFAULT_PAGINATION_PAGE = 1;
 
 // TOAST TYPES
 export const TOAST_SUCCESS = 'default';
 export const TOAST_ERROR = 'destructive';
 export const TOAST_WARNING = 'warning';
+
+// DATES
+export const REPORT_START_HOURS = 0;
+export const REPORT_END_HOURS = 24;
 
 export const NUM_WORDS = [
   'один',
@@ -264,7 +297,82 @@ export const MONTH_WORDS: MontWordsConfig[] = [
   },
 ];
 
+const yearOptionsStart = 1930;
+const yearOptionsEnd = getToday().getFullYear() + 5;
+const yearOptionsLength = yearOptionsEnd - yearOptionsStart;
+export const options = Array.from({ length: yearOptionsLength }, (_, i) => {
+  const value = `${yearOptionsStart + i}`;
+  return {
+    value,
+    label: value,
+  };
+}).reverse();
+
+export const monthOptions: SelectDataItem[] = MONTH_WORDS.map((item, index) => {
+  return {
+    value: `${index}`,
+    label: item.nominative,
+  };
+});
+
 export const WEEK_DAYS = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', "п'ятниця", 'субота'];
+
+export const GENDER_WORDS = {
+  masculine: {
+    ['виконав']: 'виконав',
+    ['призначеного']: 'призначеного',
+    ['звільненого']: 'звільненого',
+    ['направлений']: 'направлений',
+    ['таким']: 'таким',
+    ['прийняв']: 'прийняв',
+    ['приступив']: 'приступив',
+    ['вибув']: 'вибув',
+    ['здав']: 'здав',
+    ['використав']: 'використав',
+    ['отримував']: 'отримував',
+    ['здійснив']: 'здійснив',
+    ['забезпечувався']: 'забезпечувався',
+    ['який']: 'який',
+    ['увільненого']: 'увільненого',
+    ['загинув']: 'загинув',
+    ['Народився']: 'Народився',
+    ['Підданий']: 'Підданий',
+    ['Похований']: 'Похований',
+    ['був']: 'був',
+    ['евакуйований']: 'евакуйований',
+    ['отримав']: 'отримав',
+    ['відчув']: 'відчув',
+    ['забезпечений']: 'забезпечений',
+    ['вважався']: 'вважався',
+  },
+  feminine: {
+    ['виконав']: 'виконала',
+    ['призначеного']: 'призначеної',
+    ['звільненого']: 'звільненої',
+    ['направлений']: 'направлена',
+    ['таким']: 'такою',
+    ['прийняв']: 'прийняла',
+    ['приступив']: 'приступила',
+    ['вибув']: 'вибула',
+    ['здав']: 'здала',
+    ['використав']: 'використала',
+    ['отримував']: 'отримувала',
+    ['здійснив']: 'здійснила',
+    ['забезпечувався']: 'забезпечувалася',
+    ['який']: 'яка',
+    ['увільненого']: 'увільненої',
+    ['загинув']: 'загинула',
+    ['Народився']: 'Народилася',
+    ['Підданий']: 'Піддана',
+    ['Похований']: 'Похована',
+    ['був']: 'була',
+    ['евакуйований']: 'евакуйована',
+    ['отримав']: 'отримала',
+    ['відчув']: 'відчула',
+    ['забезпечений']: 'забезпечена',
+    ['вважався']: 'вважалася',
+  },
+} as const;
 
 export const ukrainianAlphabet: string[] = [
   'а',
@@ -301,6 +409,11 @@ export const ukrainianAlphabet: string[] = [
   'ю',
   'я',
 ];
+
+// api
+export const DAY_EVENT_API_URL = `/api/docx/day-event`;
+export const DAY_EVENT_ZIP_API_URL = `/api/zip/day-event`;
+export const DAILY_REPORT_API_URL = `/api/xlsx/daily-report`;
 
 // permissions
 export const PERMISSION_ALLOW = 'allow';

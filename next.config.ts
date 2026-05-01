@@ -11,14 +11,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // turbopack: {},
-  experimental: {
-    // allowDevelopmentBuild: true,
-    // typedRoutes: true,
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
+  turbopack: {},
+  devIndicators: false,
+  allowedDevOrigins: ['day.local', 'pump-up.local'],
+  // experimental: {
+  //   serverActions: {
+  //     bodySizeLimit: '2mb',
+  //   },
+  // },
 };
 
 export default withPayload(nextConfig, {

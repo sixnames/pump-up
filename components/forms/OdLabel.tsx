@@ -15,10 +15,10 @@ export default function OdLabel({ label, required, hint, description, htmlFor }:
   return (
     <div>
       <Label htmlFor={htmlFor} className={'text-muted-foreground'}>
-        {label} {hint ? <span className='text-gray-400 whitespace-nowrap'>({hint})</span> : null}
+        {label} {hint ? <span className="text-gray-400 whitespace-nowrap">({hint})</span> : null}
         {required ? <span className={'text-error text-md'}> *</span> : null}
       </Label>
-      {description ? <div className='text-gray-400'>{description}</div> : null}
+      {description ? <div className="text-gray-400">{description}</div> : null}
     </div>
   );
 }

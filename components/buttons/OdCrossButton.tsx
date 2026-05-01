@@ -22,6 +22,7 @@ export default function OdCrossButton({ onClick, className, hidden, testId }: Od
       onClick={onClick}
       type={'button'}
       data-cy={`${testId}-cross-button`}
+      tabIndex={-1}
     >
       <XIcon className='h-4 w-4 shrink-0 opacity-50' />
     </Button>

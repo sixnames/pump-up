@@ -1,16 +1,14 @@
+import { Roles } from '@/collections/Roles';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { uk } from '@payloadcms/translations/languages/uk';
 import path from 'path';
 import { buildConfig } from 'payload';
-import sharp from 'sharp';
 import { fileURLToPath } from 'url';
-import { Media } from './collections/Media';
 import { Users } from './collections/Users';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -25,6 +23,7 @@ export default buildConfig({
         Logo: '/components/admin/AdminLogo',
       },
     },
+    autoRefresh: true,
     autoLogin:
       process.env.NODE_ENV === 'development'
         ? {
@@ -33,20 +32,22 @@ export default buildConfig({
           }
         : false,
   },
-  collections: [Users, Media],
+  globals: [],
+  collections: [Roles, Users],
+
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    autoGenerate: true,
+    outputFile: path.resolve(process.cwd(), 'payload-types.ts'),
   },
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
+    url: process.env.MONGODB_URI || '',
     connectOptions: {
-      dbName: process.env.DATABASE_NAME || '',
+      dbName: process.env.MONGO_DB_NAME || '',
       ignoreUndefined: false,
     },
   }),
-  sharp,
   plugins: [],
   i18n: {
     supportedLanguages: { uk },

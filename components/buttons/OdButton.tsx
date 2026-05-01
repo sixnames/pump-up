@@ -44,6 +44,7 @@ export default function OdButton({
       data-tip={dataTip}
       onClick={onClick}
       form={form}
+      data-variant={'action-button'}
     >
       {children}
     </Button>

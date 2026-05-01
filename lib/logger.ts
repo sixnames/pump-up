@@ -3,7 +3,7 @@ import winston from 'winston';
 export const infoLogger = winston.createLogger({
   transports: [
     new winston.transports.File({
-      filename: 'output/info.log',
+      filename: 'info.log',
       level: 'info',
       format: winston.format.prettyPrint(),
     }),
@@ -13,7 +13,7 @@ export const infoLogger = winston.createLogger({
 export const errorLogger = winston.createLogger({
   transports: [
     new winston.transports.File({
-      filename: 'output/error.log',
+      filename: 'error.log',
       level: 'error',
       format: winston.format.prettyPrint(),
     }),

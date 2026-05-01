@@ -43,7 +43,7 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
             return (
               <SidebarMenuItem key={key}>
                 <SidebarMenuButton asChild isActive={isActive} tooltip={navItem.title}>
-                  <Link href={navItem.url}>
+                  <Link href={navItem.url} tabIndex={-1}>
                     {item.icon ? <NavIcon icon={item.icon} /> : null}
                     <span>{navItem.title}</span>
                   </Link>
@@ -60,7 +60,9 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
 const showDevSticker = process.env.NOdE_ENV === 'development';
 
 function DevLabel() {
-  return showDevSticker ? <div className={cn(`bg-red-600 text-white h-8 rounded-lg flex items-center justify-center`)}>dev</div> : null;
+  return showDevSticker ? (
+    <div className={cn(`bg-red-600 text-white h-8 rounded-lg flex items-center justify-center`)}>dev</div>
+  ) : null;
 }
 
 export function AppSidebar() {
@@ -69,11 +71,12 @@ export function AppSidebar() {
   const collapsed = sidebarContext.state === 'collapsed';
 
   return (
-    <Sidebar collapsible={'icon'}>
+    <Sidebar collapsible={'icon'} variant={'floating'}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              tabIndex={-1}
               onClick={() => router.push('/')}
               className={cn('mt-3 mb-2', {
                 'px-0!': collapsed,
@@ -81,17 +84,17 @@ export function AppSidebar() {
             >
               <div
                 className={cn('flex items-center justify-center transition-transform', {
-                  'transform -translate-x-[0.35rem]': collapsed,
+                  'md:transform md:-translate-x-[0.35rem]': collapsed,
                 })}
               >
                 <Logo size={'lg'} />
               </div>
               <div
                 className={cn('grid flex-1 text-left text-sm leading-tight', {
-                  hidden: collapsed,
+                  'md:hidden': collapsed,
                 })}
               >
-                Pump Up
+                <span className='truncate font-semibold'>PUMP UP</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

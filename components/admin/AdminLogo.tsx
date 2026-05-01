@@ -9,7 +9,7 @@ export default function AdminLogo({}: AdminLogoProps) {
       <div className={'admin-logo__icon-container'}>
         <Logo size={'xl'} />
       </div>
-      <span className={'text-center font-semibold text-3xl'}>ONE DAY</span>
+      <span className={'text-center font-semibold text-3xl'}>PUMP UP</span>
     </div>
   );
 }

@@ -11,7 +11,14 @@ interface OdDropdownProps {
   testId?: string;
 }
 
-export default function OdDropdown({ initialVisible, className, labelClassName, label, children, testId }: OdDropdownProps) {
+export default function OdDropdown({
+                                     initialVisible,
+                                     className,
+                                     labelClassName,
+                                     label,
+                                     children,
+                                     testId,
+                                   }: OdDropdownProps) {
   const [isVisible, setIsVisible] = useState(initialVisible);
 
   return (

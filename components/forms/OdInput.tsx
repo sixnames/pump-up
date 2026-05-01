@@ -77,8 +77,9 @@ export default function OdInput({
             pattern={pattern}
             defaultValue={alwaysString(value)}
             maxLength={maxLength}
-            onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-              onChangeCallback(alwaysString(e.target.value));
+            onInput={async (e) => {
+              const target = e.target as unknown as HTMLInputElement;
+              onChangeCallback(alwaysString(target?.value));
             }}
           />
         </div>

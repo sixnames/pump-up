@@ -1,12 +1,11 @@
 import { DeclensionEnum } from '@/@types/enums';
-import { alwaysNumber } from '@/lib/commonUtils';
+import { alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { MONTH_WORDS, WEEK_DAYS } from '@/lib/constants';
-import { getNumberWord } from '@/lib/stringUtils';
 import addZero from 'add-zero';
-import { getDay, isSameDay, startOfMonth } from 'date-fns';
+import { getDay, isSameDay, startOfDay, startOfMonth, startOfToday } from 'date-fns';
 
 export function getToday() {
-  return process.env.NODE_ENV === 'development' ? new Date(2023, 1, 20) : new Date();
+  return process.env.NODE_ENV === 'development' ? startOfDay(new Date(2023, 1, 20)) : startOfToday();
 }
 
 export type GetReadableDateMonthVariant = 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined;
@@ -22,8 +21,6 @@ export type GetReadableDatePayload = {
   date?: Date;
   dateDay: number;
   dateDayString: string;
-  dateFileName: string;
-  dateFileNameWithTime: string;
   readableDateWithTime: string;
   dateHour: number;
   dateMinutes: number;
@@ -31,8 +28,9 @@ export type GetReadableDatePayload = {
   dateMonthString: string;
   dateMonthWord: string;
   dateMonthWordNominative: string;
-  dateShortYear: string;
+  dateYearShort: string;
   dateYear: number;
+  fileNameDate: string;
   dateYearString: string;
   isToday?: boolean;
   monthStart?: Date;
@@ -40,6 +38,7 @@ export type GetReadableDatePayload = {
   readableDateWithShortYear: string;
   readableDateWithoutDay: string;
   weekDay: string;
+  time: string;
 };
 
 const getReadableDateEmptyPayload: GetReadableDatePayload = {
@@ -53,16 +52,16 @@ const getReadableDateEmptyPayload: GetReadableDatePayload = {
   dateMinutes: 0,
   date: undefined,
   monthStart: undefined,
-  dateFileName: '',
-  dateFileNameWithTime: '',
   dateDayString: '',
   dateMonthString: '',
   dateYearString: '',
-  dateShortYear: '',
+  dateYearShort: '',
   dateMonthWord: '',
   dateMonthWordNominative: '',
   readableDateWithShortYear: '',
+  fileNameDate: '',
   weekDay: '',
+  time: '',
   isToday: false,
 };
 
@@ -77,7 +76,7 @@ export function getReadableDate({
     return getReadableDateEmptyPayload;
   }
 
-  const monthStart = startOfMonth(new Date(eventDate).setHours(0, 0, 0, 0));
+  const monthStart = startOfMonth(eventDate);
   const weekDayIndex = getDay(eventDate);
   const weekDay = WEEK_DAYS[weekDayIndex];
 
@@ -97,32 +96,36 @@ export function getReadableDate({
 
   const dateYearString = `${dateYear}`;
 
-  const dateFileName = `${dateYear}-${addZero(dateMonth)}-${addZero(dateDay)}`;
-  const dateFileNameWithTime = `${dateFileName}-${addZero(dateHour)}-${addZero(dateMinutes)}`;
-
   const readableDate = initialReadableDate.replace('р.', 'року');
 
+  const dateDayString = addZero(dateDay);
+  const dateMonthString = addZero(dateMonth);
+
   return {
+    date: eventDate,
     readableDate,
+
     readableDateWithShortYear: readableDate.replace(dateYearString, dateYearString.slice(2)),
     readableDateWithoutDay: readableDate.split('.').slice(1).join('.'),
     readableDateWithTime: `${readableDate} ${addZero(dateHour)}:${addZero(dateMinutes)}`,
+
     dateDay,
     dateMonth,
     dateYear,
     dateHour,
     dateMinutes,
-    dateFileName,
-    dateFileNameWithTime,
-    date: eventDate,
     monthStart,
-    dateDayString: addZero(dateDay),
-    dateMonthString: addZero(dateMonth),
+    time: `${addZero(alwaysString(dateHour), 2)}:${addZero(alwaysString(dateMinutes), 2)}`,
+
+    dateDayString,
+    dateMonthString,
     dateYearString,
-    dateShortYear: `${dateYear}`.slice(2),
+    dateYearShort: `${dateYear}`.slice(2),
+
     dateMonthWord,
     dateMonthWordNominative,
     weekDay,
+    fileNameDate: `${dateYearString}-${dateMonthString}-${dateDayString}`,
     isToday: isSameDay(eventDate, getToday()),
   };
 }
@@ -182,22 +185,6 @@ export function getYearSuffix(initialNumber?: number) {
     return 'роки';
   }
   return 'років';
-}
-
-interface GetReadableDurationParams {
-  years?: number;
-  months?: number;
-  days?: number;
-}
-
-export function getReadableDuration(params: GetReadableDurationParams) {
-  const years = alwaysNumber(params.years);
-  const months = alwaysNumber(params.months);
-  const days = alwaysNumber(params.days);
-
-  return `${years} (${getNumberWord(years)}) ${getYearSuffix(years)} ${months} (${getNumberWord(
-    months,
-  )}) ${getMonthSuffix(months)} ${days} (${getNumberWord(days)}) ${getDaySuffix(days)}`;
 }
 
 export function safeDate(date?: Date | string | null, fallback?: Date | string): Date | undefined {

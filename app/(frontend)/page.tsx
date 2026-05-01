@@ -1,7 +1,9 @@
+import OdTitle from '@/components/common/OdTitle';
+import MainPage from '@/components/main-page/MainPage';
 import type { Metadata } from 'next';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
 
-const title = `Pump Up`;
+const title = 'PUMP UP';
 
 export const metadata: Metadata = {
   title,
@@ -12,9 +14,10 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   return (
     <ProtectedRoute>
-      <div className={'min-h-svh flex items-center justify-center'}>
-        <div className={'flex flex-col gap-3'}>Home Page</div>
-      </div>
+      <OdTitle testId={'main-page'} breadcrumbs={[]}>
+        {title}
+      </OdTitle>
+      <MainPage />
     </ProtectedRoute>
   );
 }

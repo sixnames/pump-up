@@ -1,7 +1,18 @@
 import { commonFieldConfig } from '@/collections/coomonFieldConfig';
-import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
+import { alwaysArray, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { ArrayField, CheckboxField, Field, GroupField, TextareaField, TextField } from 'payload';
+import {
+  ArrayField,
+  CheckboxField,
+  DateField,
+  Field,
+  GroupField,
+  NumberField,
+  RelationshipField,
+  SelectField,
+  TextareaField,
+  TextField,
+} from 'payload';
 
 export const subDocumentIdFields: Field[] = [
   {
@@ -117,37 +128,36 @@ export const DeclensionFields = (required?: boolean): Field[] => [
   },
 ];
 
-export function DeclensionNameField(params: GroupFieldParams, required: boolean | undefined = true): [GroupField, Field] {
-  return [
-    {
-      type: 'group',
-      ...params,
-      interfaceName: 'DeclensionName',
-      hooks: {
-        beforeChange: [
-          async ({ data }) => {
-            if (data) {
-              const nameString = alwaysString(data.name?.nominative);
-              if (data.sortOrder) {
-                data.previewName = `${nameString} (${alwaysNumber(data.sortOrder, 0)})`;
-                return;
-              }
-              data.previewName = nameString;
-            }
-          },
-        ],
+export function EmailsField(params: Omit<BaseFieldParams, 'admin'>): ArrayField {
+  return {
+    type: 'array',
+    defaultValue: [],
+    ...params,
+    fields: [
+      {
+        type: 'email',
+        name: commonFieldConfig.email,
+        label: fieldLabels.email.singular,
+        required: true,
       },
-      fields: DeclensionFields(required),
-    },
-    {
-      name: commonFieldConfig.previewName,
-      label: fieldLabels.previewName.singular,
-      type: 'text',
-      admin: {
-        hidden: true,
+    ],
+  };
+}
+
+export function PhoneField(params: Omit<BaseFieldParams, 'admin'>): ArrayField {
+  return {
+    type: 'array',
+    defaultValue: [],
+    ...params,
+    fields: [
+      {
+        type: 'text',
+        name: commonFieldConfig.phone,
+        label: fieldLabels.phone.singular,
+        required: true,
       },
-    },
-  ];
+    ],
+  };
 }
 
 const dateRangeFields: Field[] = [
@@ -163,11 +173,13 @@ const dateRangeFields: Field[] = [
     name: commonFieldConfig.start,
     label: fieldLabels.start.singular,
     type: 'date',
+    admin: { date: { displayFormat: 'dd.MM.yyyy HH:mm' } },
   },
   {
     name: commonFieldConfig.end,
     label: fieldLabels.end.singular,
     type: 'date',
+    admin: { date: { displayFormat: 'dd.MM.yyyy HH:mm' } },
   },
 ];
 
@@ -207,3 +219,22 @@ export const noteField: TextareaField = {
   type: 'textarea',
   label: fieldLabels.note.singular,
 };
+
+export const marginTopField: Field = {
+  name: commonFieldConfig.marginTop,
+  label: fieldLabels.marginTop.singular,
+  type: 'number',
+  defaultValue: 0,
+  max: 3,
+  min: 0,
+};
+
+export type DayEventFormField =
+  | DateField
+  | RelationshipField
+  | TextField
+  | ArrayField
+  | NumberField
+  | CheckboxField
+  | TextareaField
+  | SelectField;

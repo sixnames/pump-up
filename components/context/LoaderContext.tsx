@@ -1,6 +1,7 @@
 'use client';
+import { Spinner } from '@/components/ui/spinner';
+import { ProgressProvider } from '@bprogress/next/app';
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { BarLoader } from 'react-spinners';
 
 interface LoaderContextValue {
   showLoader: () => void;
@@ -25,14 +26,20 @@ const LoaderContextProvider = ({ children }: LoaderContextProviderProps) => {
   };
 
   return (
-    <LoaderContext.Provider value={{ showLoader, hideLoader }}>
-      {children}
-      {show ? (
-        <div className={'fixed top-0 left-0 w-screen h-screen z-1000 flex justify-center items-center bg-[rgba(0,0,0,0.15)]'}>
-          <BarLoader color={'#e00101'} loading={true} aria-label='Loading Spinner' data-testid='loader' />
-        </div>
-      ) : null}
-    </LoaderContext.Provider>
+    <ProgressProvider height='3px' color='hsl(0, 72%, 51%)' options={{ showSpinner: false }}>
+      <LoaderContext.Provider value={{ showLoader, hideLoader }}>
+        {children}
+        {show ? (
+          <div
+            className={
+              'fixed top-0 left-0 w-screen h-screen z-1000 flex justify-center items-center bg-[rgba(0,0,0,0.15)]'
+            }
+          >
+            <Spinner aria-label='Loading Spinner' data-testid='loader' />
+          </div>
+        ) : null}
+      </LoaderContext.Provider>
+    </ProgressProvider>
   );
 };
 

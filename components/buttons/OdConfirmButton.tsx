@@ -17,6 +17,7 @@ export default function OdConfirmButton({ button, dialog, children, skipConfirm 
     <>
       <OdButton
         {...button}
+        tabIndex={-1}
         onClick={async () => {
           if (skipConfirm) {
             await dialog?.onConfirm?.();
@@ -29,7 +30,7 @@ export default function OdConfirmButton({ button, dialog, children, skipConfirm 
       </OdButton>
 
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <InfoDialogContent closeDialog={() => setIsConfirmOpen(false)} {...dialog} />
+        <InfoDialogContent closeDialog={() => setIsConfirmOpen(false)} {...dialog} isDialogOpen={isConfirmOpen} />
       </Dialog>
     </>
   );

@@ -8,12 +8,19 @@ export interface OdRemoveButtonProps {
   remove: () => void | Promise<void>;
   nameInMessage?: string | null;
   className?: string;
-  hidden?: boolean;
+  hidden?: boolean | null;
   testId?: string;
   skipConfirm?: boolean;
 }
 
-export default function OdRemoveButton({ remove, nameInMessage, className, hidden, testId, skipConfirm }: OdRemoveButtonProps) {
+export default function OdRemoveButton({
+  remove,
+  nameInMessage,
+  className,
+  hidden,
+  testId,
+  skipConfirm,
+}: OdRemoveButtonProps) {
   if (hidden) {
     return null;
   }
@@ -34,6 +41,7 @@ export default function OdRemoveButton({ remove, nameInMessage, className, hidde
         dialog={{
           title: getUserActionTitle(nameInMessage || 'елемент').deleteConfirm,
           onConfirm: () => remove(),
+          isDialogOpen: false,
         }}
       >
         <MinusIcon className={`w-4 h-4`} />

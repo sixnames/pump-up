@@ -5,12 +5,14 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+.pnpm-store
 
-/.idea/*
-!/.idea/runConfigurations
+/.idea
 
 # testing
 /coverage
+/cypress/fixtures
+/cypress/downloads
 
 # next.js
 /.next/
@@ -18,6 +20,11 @@
 
 # production
 /build
+/data
+/db
+/dev-db
+/output
+/db-backup
 
 # misc
 .DS_Store
@@ -41,10 +48,11 @@ next-env.d.ts
 .env
 
 /media
-
-# Playwright
+/assets/uploads
 node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+info.log
+error.log

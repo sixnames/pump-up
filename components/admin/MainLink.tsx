@@ -1,7 +1,8 @@
 import { HomeIcon } from 'lucide-react';
 import Link from 'next/link';
 
-interface MainLinkProps {}
+interface MainLinkProps {
+}
 
 export default function MainLink({}: MainLinkProps) {
   return (

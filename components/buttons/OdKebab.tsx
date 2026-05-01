@@ -22,6 +22,7 @@ interface KebabDialogCloseParams {
 
 export type KebabDialogBaseProps = {
   closeDialog: (params?: KebabDialogCloseParams) => void;
+  isDialogOpen: boolean;
 };
 
 export type OdKebabBaseItemProps = {
@@ -114,7 +115,7 @@ export default function OdKebab({
             type={'button'}
             className={cn('p-0! cursor-pointer', className, {
               'w-6 h-6': size === 'sm',
-              'w-8 h-8': size === 'md',
+              'w-9 h-9': size === 'md',
               'w-10 h-10': size === 'lg',
             })}
           >
@@ -165,7 +166,7 @@ export default function OdKebab({
         }
         return getDialogState(index) ? (
           <Dialog open={getDialogState(index)} onOpenChange={dialogStateChange(index)} key={index}>
-            {item.dialogContent({ closeDialog })}
+            {item.dialogContent({ closeDialog, isDialogOpen: getDialogState(index) })}
           </Dialog>
         ) : null;
       })}

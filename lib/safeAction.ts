@@ -1,21 +1,24 @@
+import { checkActionPermission, PermissionPath } from '@/collections/Users/actions';
 import {
   CREATE_FAILURE_MESSAGE,
   CREATE_SUCCESS_MESSAGE,
   DELETE_FAILURE_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
+  FORBIDDEN_PERMISSION,
+  PERMISSION_ALLOW,
   READ_FAILURE_MESSAGE,
   READ_SUCCESS_MESSAGE,
   TOAST_ERROR,
   UPDATE_FAILURE_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
 } from '@/lib/constants';
-import { getToday } from '@/lib/dateUtils';
 import { getErrorMessage } from '@/lib/errorUtils';
 import { errorLogger, infoLogger } from '@/lib/logger';
 import { getPD, protectedRoute } from '@/lib/payloadUtils';
 import { User } from '@/payload-types';
 import { unstable_noStore } from 'next/cache';
 import { BasePayload } from 'payload';
+import * as yup from 'yup';
 
 function getHelpersSuccessMessage(message: string) {
   return (suffix?: string | null) => {
@@ -48,10 +51,11 @@ const messages = {
     success: getHelpersSuccessMessage(DELETE_SUCCESS_MESSAGE),
     error: getHelpersErrorMessage(DELETE_FAILURE_MESSAGE),
   },
+  permissionError: FORBIDDEN_PERMISSION,
 };
 
 function getActionReadableDate() {
-  const now = getToday();
+  const now = new Date();
   return `${now.toLocaleDateString('uk-UA')} ${now.toLocaleTimeString('uk-UA')}`;
 }
 
@@ -64,11 +68,12 @@ interface OdSafeQueryContext<TInput> {
 }
 
 interface OdSafeQueryParams<TResult, TInput> {
+  permissionPath?: PermissionPath;
   key: string;
   action: (context: OdSafeQueryContext<TInput>) => Promise<TResult>;
 }
 
-export function odSafeQuery<TResult, TInput>({ action, key }: OdSafeQueryParams<TResult, TInput>) {
+export function odSafeQuery<TResult, TInput>({ action, key, permissionPath }: OdSafeQueryParams<TResult, TInput>) {
   return async (input: TInput extends undefined ? undefined : TInput): Promise<TResult | undefined> => {
     unstable_noStore();
     const { user } = await protectedRoute();
@@ -80,6 +85,14 @@ export function odSafeQuery<TResult, TInput>({ action, key }: OdSafeQueryParams<
     };
 
     try {
+      if (permissionPath) {
+        await checkActionPermission({
+          permissionPath,
+          key,
+          user,
+        });
+      }
+
       return await action({
         user,
         key,
@@ -104,6 +117,7 @@ interface OdSafeMutationContextHelpersMessages {
   read: OdSafeMutationContextHelpersMessage;
   update: OdSafeMutationContextHelpersMessage;
   delete: OdSafeMutationContextHelpersMessage;
+  permissionError: string;
 }
 
 interface OdSafeMutationContext {
@@ -126,16 +140,26 @@ export type MutationErrorResult = {
 };
 
 interface OdSafeMutationParams<TResult, TInput> {
+  permissionPath: PermissionPath;
   key: string;
+  validationSchema?: () => yup.Schema;
   customErrorMessage?: string;
-  action: (input: TInput extends undefined ? undefined : TInput, context: OdSafeMutationContext) => Promise<MutationResult<TResult>>;
+  action: (
+    input: TInput extends undefined ? undefined : TInput,
+    context: OdSafeMutationContext,
+  ) => Promise<MutationResult<TResult>>;
   afterMutation?: (data: TResult, context: OdSafeMutationContext) => Promise<void>;
-  beforeMutation?: (data: TInput extends undefined ? undefined : TInput, context: OdSafeMutationContext) => Promise<void>;
+  beforeMutation?: (
+    data: TInput extends undefined ? undefined : TInput,
+    context: OdSafeMutationContext,
+  ) => Promise<void>;
 }
 
 export function odSafeMutation<TResult, TInput>({
   action,
   key,
+  permissionPath,
+  validationSchema,
   customErrorMessage,
   afterMutation,
   beforeMutation,
@@ -151,6 +175,14 @@ export function odSafeMutation<TResult, TInput>({
     };
 
     try {
+      const account = await checkActionPermission({ permissionPath, key, user });
+      if (!account && permissionPath !== PERMISSION_ALLOW) {
+        return {
+          status: TOAST_ERROR,
+          message: FORBIDDEN_PERMISSION,
+        };
+      }
+
       const context = {
         user,
         key,
@@ -159,6 +191,12 @@ export function odSafeMutation<TResult, TInput>({
       } satisfies OdSafeMutationContext;
 
       let values = input;
+      if (input && validationSchema) {
+        values = await validationSchema().validate(input, {
+          abortEarly: false,
+        });
+      }
+
       if (input && beforeMutation) {
         await beforeMutation(input, context);
       }

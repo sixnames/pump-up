@@ -5,7 +5,7 @@ import React from 'react';
 
 interface OdInfoBoxProps {
   children?: React.ReactNode;
-  variant?: 'default' | 'destructive';
+  variant?: 'default' | 'destructive' | 'warning' | 'success';
   className?: string;
   title?: string;
   testId?: string;
@@ -15,8 +15,8 @@ export default function OdInfoBox({ children, variant = 'default', className, ti
   const infoIconVariants = ['default', 'success', 'warning'];
   return (
     <Alert variant={variant} className={cn(className)}>
-      {!infoIconVariants.includes(variant) ? <ExclamationTriangleIcon className='h-4 w-4' /> : null}
-      {infoIconVariants.includes(variant) ? <InfoCircledIcon className='h-4 w-4' /> : null}
+      {!infoIconVariants.includes(variant) ? <ExclamationTriangleIcon className="h-4 w-4" /> : null}
+      {infoIconVariants.includes(variant) ? <InfoCircledIcon className="h-4 w-4" /> : null}
       <div className={'pt-2'} data-cy={testId}>
         {title ? <AlertTitle>{title}</AlertTitle> : null}
         {children ? <AlertDescription>{children}</AlertDescription> : null}

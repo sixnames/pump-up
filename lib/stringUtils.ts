@@ -7,7 +7,7 @@ export function odSentenceCase(str?: string | null) {
   return cleanString.charAt(0).toUpperCase() + cleanString.slice(1);
 }
 
-export function noSentenceCase(str?: string) {
+export function noSentenceCase(str?: string | null) {
   if (!str) {
     return '';
   }
@@ -89,20 +89,22 @@ export function getWordsCommonBase(words: (string | undefined | null)[]): string
   return base;
 }
 
-export function getFileCellValue(value: number | null | string | undefined | boolean | Date | Record<any, any> | Array<any>) {
+export function getFileCellValue(
+  value: number | null | string | undefined | boolean | Date | Record<any, any> | Array<any>,
+) {
   return alwaysString(value, ' ');
 }
 
-const apostrophe = "'";
+export function normalizeApostrophes(str: string): string {
+  const apostrophes = /[\u2019\u2018\u2032\u02BC\uFF07\u275B\u275C']/g;
 
-export function normalizeString(input: string) {
-  return input.trim().replace(/['’`ʹ]/g, apostrophe);
+  return str.trim().replace(apostrophes, "'");
 }
 
 type GetWordsArrayFromStringValue = number | null | string | undefined | boolean | Date | Record<any, any> | Array<any>;
 
 export function getWordsArrayFromString(value: GetWordsArrayFromStringValue) {
-  return normalizeString(alwaysString(value))
+  return alwaysString(value)
     .split(' ')
     .map((q) => q.trim())
     .filter((q) => q && q.length > 0);
@@ -115,14 +117,6 @@ export function getSearchRegExp(value: GetWordsArrayFromStringValue) {
 
 export function formatBoolean(value?: boolean | null) {
   return value ? 'Так' : 'Ні';
-}
-
-export function stringifyRegistrationNumber(value: string | number | null | undefined) {
-  return alwaysString(value).replace('.', '/');
-}
-
-export function parseRegistrationNumber(value: string | number | null | undefined) {
-  return alwaysNumber(alwaysString(value).replace('/', '.'));
 }
 
 export function getAlphabetItem(i: number, excludedLetters?: string[]): string {

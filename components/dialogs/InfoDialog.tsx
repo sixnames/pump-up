@@ -11,13 +11,21 @@ export interface InfoDialogContentProps extends KebabDialogBaseProps {
   onConfirm?: () => void | Promise<void>;
   children?: ReactNode;
   showCancelButton?: boolean;
+  isDialogOpen: boolean;
 }
 
-export function InfoDialogContent({ children, onConfirm, title, showCancelButton = true, closeDialog }: InfoDialogContentProps) {
+export function InfoDialogContent({
+  children,
+  onConfirm,
+  title,
+  showCancelButton = true,
+  closeDialog,
+  isDialogOpen,
+}: InfoDialogContentProps) {
   useKeyboardShortcut({
     key: 'Enter',
     callbackAction: () => {
-      if (onConfirm) {
+      if (onConfirm && isDialogOpen) {
         onConfirm();
         closeDialog();
       }

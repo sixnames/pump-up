@@ -34,8 +34,7 @@
 
 .app-logo {
   overflow: hidden;
-  border-radius: 100%;
-  background: #ffffff;
+  border-radius: 0.25rem;
 }
 
 .app-logo__icon {
@@ -93,4 +92,19 @@
 .main-link__link__icon {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.variables {
+  background-color: var(--theme-error-300);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.25rem;
+
+  &__title {
+    margin-bottom: 0.5rem;
+  }
+
+  &__item {
+    margin-top: 0.25rem;
+  }
 }

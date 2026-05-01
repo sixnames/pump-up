@@ -1,6 +1,5 @@
-import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
-import { normalizeString } from './stringUtils';
+import { normalizeApostrophes } from './stringUtils';
 
 function isObject(value: any) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -15,10 +14,10 @@ export function alwaysString(value: AlwaysStringValue, fallback?: string | null)
     payload = fallback || '';
   }
   if (typeof value === 'string') {
-    payload = value;
+    payload = normalizeApostrophes(value);
   }
   if (typeof value === 'number') {
-    payload = `${value}`;
+    payload = normalizeApostrophes(`${value}`);
   }
   if (typeof value === 'boolean') {
     payload = value ? 'Так' : 'Ні';
@@ -27,12 +26,12 @@ export function alwaysString(value: AlwaysStringValue, fallback?: string | null)
     payload = value.toLocaleDateString('uk-UA');
   }
   if (Array.isArray(value)) {
-    payload = value.join(', ');
+    payload = normalizeApostrophes(value.join(', '));
   }
   if (isObject(value)) {
     payload = JSON.stringify(value);
   }
-  return normalizeString(`${payload}`);
+  return normalizeApostrophes(`${payload}`);
 }
 
 export function alwaysNumber(value: number | null | string | undefined, fallback?: number): number {
@@ -58,26 +57,6 @@ export function alwaysArray<T>(value?: T | T[] | null): T[] {
     return [];
   }
   return Array.isArray(value) ? value : [value];
-}
-
-export function getMissingNumbers(numArr: number[], excludedNumbers?: number[]) {
-  const arr = cloneDeep(numArr).sort((a, b) => a - b);
-  const missingNumbers: number[] = [];
-  for (let i = 0; i < arr.length - 1; i++) {
-    const currentNum = arr[i];
-    const nextNum = arr[i + 1];
-
-    if (nextNum - currentNum > 1) {
-      for (let j = currentNum + 1; j < nextNum; j++) {
-        missingNumbers.push(j);
-      }
-    }
-  }
-  return missingNumbers.filter((num) => !alwaysArray(excludedNumbers).includes(num));
-}
-
-export function getInOrderPositionName(origin: string): string {
-  return `який перебуває в розпорядженні командира військової частини ${origin}`;
 }
 
 export function castDocToUI<SR, CT>(doc?: SR | null): CT {

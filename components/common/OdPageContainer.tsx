@@ -11,7 +11,7 @@ export default function OdPageContainer({ children }: OdPageContainerProps) {
   const pathname = usePathname();
   return (
     <div
-      className={cn('px-4 md:px-6 lg:px-10', {
+      className={cn('px-4', {
         'pb-4': pathname !== '/',
       })}
     >
