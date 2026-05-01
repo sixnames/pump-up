@@ -5,7 +5,7 @@ import { alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { CollectionConfig, Field } from 'payload';
 import { roleFieldConfig } from './fieldConfig';
-//
+
 const ruleCollections = [
   {
     slug: rolesSlug,
