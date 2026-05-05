@@ -5,7 +5,10 @@ import type { CollectionConfig } from 'payload';
 
 export const Exercises: CollectionConfig = {
   slug: exercisesSlug,
-  labels: fieldLabels.user,
+  labels: {
+    singular: fieldLabels.exercise.singular.nominative,
+    plural: fieldLabels.exercise.plural.nominative,
+  },
   admin: {
     useAsTitle: exerciseFieldConfig.label,
   },
