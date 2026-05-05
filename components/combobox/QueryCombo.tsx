@@ -1,6 +1,6 @@
 'use client';
 import { CollectionNames } from '@/@types/common-types';
-import { OdInputCommonProps } from '@/@types/form-input-types';
+import { FKInputCommonProps, OdInputCommonProps } from '@/@types/form-input-types';
 import OdButton from '@/components/buttons/OdButton';
 import OdCrossButton from '@/components/buttons/OdCrossButton';
 import OdRemoveButton from '@/components/buttons/OdRemoveButton';
@@ -9,14 +9,18 @@ import OdLabel from '@/components/forms/OdLabel';
 import { Button } from '@/components/ui/button';
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useToast } from '@/hooks/use-toast';
 import { alwaysArray, alwaysString } from '@/lib/commonUtils';
-import { getUserActionTitle } from '@/lib/textUtils';
+import { TOAST_ERROR } from '@/lib/constants';
+import { fieldLabels } from '@/lib/fieldLabels';
+import { getReadErrorMessage, getUserActionTitle } from '@/lib/textUtils';
 import { cn } from '@/lib/utils';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import debounce from 'lodash/debounce';
 import { Check, ChevronsUpDown, XIcon } from 'lucide-react';
 import * as React from 'react';
 import { useRef, useState } from 'react';
+import { getComboOptionById } from './comboActions';
 
 export interface QueryComboOption extends Record<any, any> {
   id?: string | null;
@@ -29,42 +33,60 @@ export interface QueryComboCommonProps extends OdInputCommonProps {
 }
 
 export interface QueryComboConsumerProps<T> extends QueryComboCommonProps {
-  onChangeAction: (value: T[]) => void | Promise<void>;
   selectedOptions?: T[];
+  onChangeAction: (value?: T | null) => void | Promise<void>;
   multiple?: boolean;
+  onChangeCallback?: (item: T) => void | Promise<void>;
+  onClearCallback?: () => void | Promise<void>;
 }
 
-export interface QueryFilterComboConsumerProps extends Omit<QueryComboCommonProps, 'onClear' | 'skipConfirmOnClear'> {
-  multiple?: boolean;
+export interface FKQueryComboConsumerProps<T>
+  extends Omit<QueryComboConsumerProps<T>, 'onChangeAction' | 'onClear' | 'withError' | 'testId'>, FKInputCommonProps {}
+
+export interface QueryComboConsumerSingleProps<T> extends Omit<
+  QueryComboConsumerProps<T>,
+  'multiple' | 'selectedOptions'
+> {
+  selectedOption?: T | null;
 }
 
-interface QueryComboListProps {
-  queryOptions: {
-    queryKey: unknown[];
-    queryFn: (query: string) => Promise<QueryComboOption[] | undefined>;
-    enabled?: boolean;
-  };
+export interface FKQueryComboConsumerSingleProps<T>
+  extends
+    Omit<QueryComboConsumerSingleProps<T>, 'onChangeAction' | 'onClear' | 'withError' | 'testId'>,
+    FKInputCommonProps {
+  onChangeCallback?: (item: T) => void | Promise<void>;
+  onClearCallback?: () => void | Promise<void>;
+}
+
+interface QueryComboListProps<T> {
+  queryKey?: unknown[];
+  queryFn: (query: string) => Promise<QueryComboOption[] | undefined>;
+  enabled?: boolean;
   onChangeAction: (value: string) => void | Promise<void>;
   collectionName: CollectionNames;
   optionsFilter?: QueryComboCommonProps['optionsFilter'];
   selectedOptionIds: string[];
   testId: string;
+  onChangeCallback?: (item: T) => void | Promise<void>;
+  onClearCallback?: () => void | Promise<void>;
 }
 
-function QueryComboList({
-  queryOptions,
+function QueryComboList<T extends Record<any, any>>({
   collectionName,
   testId,
   onChangeAction,
   optionsFilter,
   selectedOptionIds,
-}: QueryComboListProps) {
+  queryFn,
+  queryKey,
+  enabled,
+}: QueryComboListProps<T>) {
   const [value, setValue] = useState<string>('');
   const query = useQuery({
-    queryKey: [...queryOptions.queryKey, value],
-    queryFn: () => queryOptions.queryFn(value),
+    queryKey: [`${collectionName}-options`, ...alwaysArray(queryKey), value],
+    queryFn: () => queryFn(value),
     placeholderData: keepPreviousData,
-    enabled: queryOptions.enabled,
+    enabled,
   });
   const initialOptions = alwaysArray(query.data);
   const filteredOptions = optionsFilter ? initialOptions.filter(optionsFilter) : initialOptions;
@@ -111,7 +133,9 @@ function QueryComboList({
               data-cy={`${testId}-combo-option`}
               key={option?.id}
               value={alwaysString(option?.id)}
-              onSelect={onChangeAction}
+              onSelect={async (value) => {
+                await onChangeAction(value);
+              }}
             >
               <Check
                 className={cn(
@@ -128,14 +152,18 @@ function QueryComboList({
   );
 }
 
-export interface QueryComboProps extends QueryComboCommonProps {
-  onChangeAction: QueryComboListProps['onChangeAction'];
+export interface QueryComboProps<T> extends QueryComboCommonProps {
+  onChangeAction: (value?: T | null) => void | Promise<void>;
   selectedOptions?: QueryComboOption[];
-  queryOptions: QueryComboListProps['queryOptions'];
+  queryFn: QueryComboListProps<T>['queryFn'];
+  queryKey?: QueryComboListProps<T>['queryKey'];
+  enabled?: QueryComboListProps<T>['enabled'];
+  onChangeCallback?: QueryComboListProps<T>['onChangeCallback'];
+  onClearCallback?: QueryComboListProps<T>['onClearCallback'];
   collectionName: CollectionNames;
 }
 
-export function QueryCombo({
+export function QueryCombo<T extends Record<any, any>>({
   onChangeAction,
   disabled,
   label,
@@ -148,13 +176,33 @@ export function QueryCombo({
   removeProps,
   optionsFilter,
   allowGrowing,
-  queryOptions,
+  queryFn,
+  queryKey,
+  enabled,
+  onChangeCallback,
+  onClearCallback,
   ...props
-}: QueryComboProps) {
+}: QueryComboProps<T>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [confirmDialogState, setConfirmDialogState] = useInfoDialog();
   const [open, setOpen] = React.useState(false);
   const selectedOptions = alwaysArray(props.selectedOptions);
+  const { toast } = useToast();
+  const getHandler = useMutation({
+    mutationFn: getComboOptionById,
+    onSuccess: async (data) => {
+      if (!data) {
+        toast({
+          variant: TOAST_ERROR,
+          title: getReadErrorMessage(fieldLabels.data.singular),
+        });
+        return;
+      }
+      const item = data as T;
+      await onChangeAction(item);
+      await onChangeCallback?.(item);
+    },
+  });
 
   async function clearHandler() {
     if (!onClear || selectedOptions.length < 1) {
@@ -166,7 +214,10 @@ export function QueryCombo({
     }
     setConfirmDialogState({
       title: getUserActionTitle('заповнені данні').deleteConfirm,
-      onConfirm: onClear,
+      onConfirm: async () => {
+        await onClear();
+        await onClearCallback?.();
+      },
       isDialogOpen: false,
     });
   }
@@ -235,7 +286,7 @@ export function QueryCombo({
                               aria-label={'button'}
                               data-cy={`${testId}-cross-button`}
                               onClick={async () => {
-                                await onChangeAction(id);
+                                await getHandler.mutateAsync({ id, collectionName });
                               }}
                             >
                               <XIcon className='h-3 w-3 shrink-0 opacity-50' />
@@ -272,12 +323,14 @@ export function QueryCombo({
           {open ? (
             <QueryComboList
               testId={testId}
-              queryOptions={queryOptions}
+              queryFn={queryFn}
+              queryKey={queryKey}
+              enabled={enabled}
               selectedOptionIds={selectedOptionIdsArray}
               collectionName={collectionName}
               optionsFilter={optionsFilter}
-              onChangeAction={async (currentValue) => {
-                await onChangeAction(currentValue);
+              onChangeAction={async (id) => {
+                await getHandler.mutateAsync({ id, collectionName });
                 setOpen(false);
                 if (triggerRef.current) {
                   triggerRef.current.focus();

@@ -84,7 +84,7 @@ export function AppSidebar() {
             >
               <div
                 className={cn('flex items-center justify-center transition-transform', {
-                  'md:transform md:-translate-x-[0.35rem]': collapsed,
+                  'md:transform md:translate-x-[-0.35rem]': collapsed,
                 })}
               >
                 <Logo size={'lg'} />
@@ -94,7 +94,7 @@ export function AppSidebar() {
                   'md:hidden': collapsed,
                 })}
               >
-                <span className='truncate font-semibold'>PUMP UP</span>
+                <span className="truncate font-semibold">PUMP UP</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

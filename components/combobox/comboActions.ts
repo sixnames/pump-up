@@ -4,11 +4,11 @@ import { CollectionNames } from '@/@types/common-types';
 import { QueryComboOption } from '@/components/combobox/QueryCombo';
 import { alwaysArray, alwaysString } from '@/lib/commonUtils';
 import { COMBO_LIMIT, SORT_DESC_STR } from '@/lib/constants';
+import { odSafeQuery } from '@/lib/safeAction';
 import { getWordsArrayFromString } from '@/lib/stringUtils';
 import { BasePayload } from 'payload';
 
 export interface GetTreesListParams {
-  dayOrderId?: string | null;
   query?: string | null;
 }
 
@@ -18,6 +18,7 @@ interface GetQueryRegExpsParams extends GetTreesListParams {
 }
 
 export async function getQueryRegExps({ query, payload, searchableField }: GetQueryRegExpsParams) {
+
   const finalQuery = alwaysString(query);
   const queryQuery = getWordsArrayFromString(query).join('.*');
 
@@ -61,16 +62,16 @@ interface GetComboOptionsParams {
 }
 
 export async function getComboOptions({
-  payload,
-  collectionName,
-  query,
-  searchableField,
-  sortableField,
-  limit = COMBO_LIMIT,
-  sortDirection = SORT_DESC_STR,
-  additionalDbQuery,
-  optionsMapper,
-}: GetComboOptionsParams) {
+                                        payload,
+                                        collectionName,
+                                        query,
+                                        searchableField,
+                                        sortableField,
+                                        limit = COMBO_LIMIT,
+                                        sortDirection = SORT_DESC_STR,
+                                        additionalDbQuery,
+                                        optionsMapper,
+                                      }: GetComboOptionsParams) {
   const { dbQuery } = await getQueryRegExps({
     payload,
     query,
@@ -105,3 +106,18 @@ export async function getComboOptions({
 
   return optionsMapper ? options.map(optionsMapper) : options;
 }
+
+interface GetComboOptionByIdParams {
+  id: string;
+  collectionName: CollectionNames;
+}
+
+export const getComboOptionById = odSafeQuery<unknown, GetComboOptionByIdParams>({
+  key: 'getComboOptionById',
+  action: async ({ params, payload }) => {
+    return await payload.findByID({
+      collection: params.collectionName,
+      id: params.id,
+    });
+  },
+});

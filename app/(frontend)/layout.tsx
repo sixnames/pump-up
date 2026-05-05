@@ -2,6 +2,7 @@ import { getSessionUser } from '@/collections/Users/actions';
 import { AppSidebar } from '@/components/common/AppSidebar';
 import OdPageContainer from '@/components/common/OdPageContainer';
 import OdSidebarTrigger from '@/components/common/OdSidebarTrigger';
+import { GlobalConfigContextProvider } from '@/components/context/GlobalConfigContext';
 import { LoaderContextProvider } from '@/components/context/LoaderContext';
 import QueryProvider from '@/components/context/QueryProvider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -45,15 +46,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <QueryProvider>
           <ThemeProvider defaultTheme={'dark'} attribute={'class'} disableTransitionOnChange>
             <LoaderContextProvider>
-              <SidebarProvider defaultOpen={defaultOpen}>
-                <AppSidebar />
-                <SidebarInset>
-                  <OdSidebarTrigger />
-                  <OdPageContainer>
-                    <NuqsAdapter>{children}</NuqsAdapter>
-                  </OdPageContainer>
-                </SidebarInset>
-              </SidebarProvider>
+              <GlobalConfigContextProvider user={authResult?.user}>
+                <SidebarProvider defaultOpen={defaultOpen}>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <OdSidebarTrigger />
+                    <OdPageContainer>
+                      <NuqsAdapter>{children}</NuqsAdapter>
+                    </OdPageContainer>
+                  </SidebarInset>
+                </SidebarProvider>
+              </GlobalConfigContextProvider>
             </LoaderContextProvider>
           </ThemeProvider>
         </QueryProvider>

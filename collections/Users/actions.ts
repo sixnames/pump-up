@@ -2,7 +2,7 @@
 
 import { roleRuleActions, ruleCollectionSlugs } from '@/collections/Roles';
 import { userFieldConfig } from '@/collections/Users/fieldConfig';
-import { getComboOptions } from '@/components/combobox/comboActionUtils';
+import { getComboOptions } from '@/components/combobox/comboActions';
 import { QueryComboOption } from '@/components/combobox/QueryCombo';
 import { usersSlug } from '@/lib/collectionNames';
 import { FORBIDDEN_PERMISSION, PERMISSION_ALLOW } from '@/lib/constants';

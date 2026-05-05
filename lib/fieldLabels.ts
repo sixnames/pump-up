@@ -1,4 +1,7 @@
 export const fieldLabels = {
+  data: {
+    singular: 'Дані',
+  },
   id: {
     singular: 'ID',
   },

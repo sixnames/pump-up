@@ -1,6 +1,10 @@
-import { Calendar, NetworkIcon, Settings } from 'lucide-react';
+import { Calendar, NetworkIcon, Plus, Settings } from 'lucide-react';
 
-export type NavIconVariant = 'calendar' | 'network' | 'settings';
+export type NavIconVariant =
+  'calendar'
+  | 'network'
+  | 'settings'
+  | 'plus';
 
 interface NavIconProps {
   icon: NavIconVariant;
@@ -19,6 +23,10 @@ export default function NavIcon({ icon, testId, className }: NavIconProps) {
 
   if (icon === 'settings') {
     return <Settings className={className} data-cy={testId} />;
+  }
+
+  if (icon === 'plus') {
+    return <Plus className={className} data-cy={testId} />;
   }
 
   return <></>;
