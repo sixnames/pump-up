@@ -378,6 +378,18 @@ export const fieldLabels = {
       ablative: 'Вправами',
     },
   },
+  workout: {
+    singular: 'Виконання вправи',
+  },
+  weight: {
+    singular: 'Вага',
+  },
+  workWeight: {
+    singular: 'Робоча вага',
+  },
+  repetitions: {
+    singular: 'Кількість повторювань',
+  },
 
   // calendar
   calendar: {

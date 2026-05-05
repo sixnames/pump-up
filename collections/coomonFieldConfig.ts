@@ -156,4 +156,6 @@ export const commonFieldConfig = {
   service: 'service',
   amount: 'amount',
   isMain: 'isMain',
+  exercise: 'exercise',
+  exercises: 'exercises',
 };

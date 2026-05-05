@@ -67,6 +67,8 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    exercises: Exercise;
+    workouts: Workout;
     roles: Role;
     users: User;
     'payload-kv': PayloadKv;
@@ -76,6 +78,8 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    exercises: ExercisesSelect<false> | ExercisesSelect<true>;
+    workouts: WorkoutsSelect<false> | WorkoutsSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -114,6 +118,31 @@ export interface UserAuthOperations {
   unlock: {
     username: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exercises".
+ */
+export interface Exercise {
+  id: string;
+  label?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workouts".
+ */
+export interface Workout {
+  id: string;
+  userId: string;
+  date: string;
+  weight: number;
+  workWeight: number;
+  repetitions: number;
+  exercise: string | Exercise;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -190,6 +219,14 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'exercises';
+        value: string | Exercise;
+      } | null)
+    | ({
+        relationTo: 'workouts';
+        value: string | Workout;
+      } | null)
+    | ({
         relationTo: 'roles';
         value: string | Role;
       } | null)
@@ -238,6 +275,29 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exercises_select".
+ */
+export interface ExercisesSelect<T extends boolean = true> {
+  label?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workouts_select".
+ */
+export interface WorkoutsSelect<T extends boolean = true> {
+  userId?: T;
+  date?: T;
+  weight?: T;
+  workWeight?: T;
+  repetitions?: T;
+  exercise?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
