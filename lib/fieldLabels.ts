@@ -361,6 +361,24 @@ export const fieldLabels = {
     singular: 'Опис звіту',
   },
 
+  // exercise
+  exercise: {
+    singular: {
+      nominative: 'Вправа',
+      genitive: 'Вправи',
+      dative: 'Вправі',
+      accusative: 'Вправу',
+      ablative: 'Вправою',
+    },
+    plural: {
+      nominative: 'Вправи',
+      genitive: 'Вправ',
+      dative: 'Вправам',
+      accusative: 'Вправи',
+      ablative: 'Вправами',
+    },
+  },
+
   // calendar
   calendar: {
     singular: 'Календар',

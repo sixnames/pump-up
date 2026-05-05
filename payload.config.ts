@@ -1,3 +1,4 @@
+import { Exercises } from '@/collections/Exercises';
 import { Roles } from '@/collections/Roles';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
@@ -33,7 +34,7 @@ export default buildConfig({
         : false,
   },
   globals: [],
-  collections: [Roles, Users],
+  collections: [Exercises, Roles, Users],
 
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
