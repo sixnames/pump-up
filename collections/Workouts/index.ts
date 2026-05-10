@@ -41,6 +41,11 @@ export const Workouts: CollectionConfig = {
       required: true,
     },
     {
+      type: 'number',
+      name: workoutFieldConfig.sets,
+      required: true,
+    },
+    {
       type: 'relationship',
       name: workoutFieldConfig.exercise,
       label: fieldLabels.exercise.singular.nominative,

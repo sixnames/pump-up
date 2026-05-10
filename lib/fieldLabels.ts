@@ -393,6 +393,9 @@ export const fieldLabels = {
   repetitions: {
     singular: 'Кількість повторювань',
   },
+  sets: {
+    singular: 'Кількість підходів',
+  },
 
   // calendar
   calendar: {

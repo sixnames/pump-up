@@ -140,6 +140,7 @@ export interface Workout {
   weight: number;
   workWeight: number;
   repetitions: number;
+  sets: number;
   exercise: string | Exercise;
   updatedAt: string;
   createdAt: string;
@@ -295,6 +296,7 @@ export interface WorkoutsSelect<T extends boolean = true> {
   weight?: T;
   workWeight?: T;
   repetitions?: T;
+  sets?: T;
   exercise?: T;
   updatedAt?: T;
   createdAt?: T;

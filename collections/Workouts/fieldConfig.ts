@@ -7,4 +7,5 @@ export const workoutFieldConfig = {
   weight: 'weight',
   workWeight: 'workWeight',
   repetitions: 'repetitions',
+  sets: 'sets',
 };
