@@ -56,7 +56,7 @@ export default function AddWorkoutPage() {
                 type={'number'}
               />
               <FkInput name={workoutFieldConfig.sets} label={{ label: fieldLabels.sets.singular }} type={'number'} />
-              <FkButton>{fieldLabels.add.action}</FkButton>
+              <FkButton withKeyboardShortcut>{fieldLabels.add.action}</FkButton>
             </Form>
           );
         }}

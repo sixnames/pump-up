@@ -3,10 +3,34 @@
 import { workoutsSlug } from '@/lib/collectionNames';
 import { alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
-import { alwaysDate } from '@/lib/dateUtils';
+import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { odSafeMutation } from '@/lib/safeAction';
+import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, Workout } from '@/payload-types';
+import { groupBy } from 'lodash';
+
+export type WorkoutsList = Record<string, Workout[]>;
+
+export const getWorkoutsList = odSafeQuery<WorkoutsList | null, void>({
+  key: 'getWorkoutsList',
+  action: async ({ user, payload }) => {
+    if (!user) {
+      return null;
+    }
+    const workouts = await payload.find({
+      pagination: false,
+      collection: workoutsSlug,
+      where: {
+        userId: {
+          equals: user.id,
+        },
+      },
+    });
+    return groupBy(workouts.docs, (item) => {
+      return getReadableDate({ date: item.date }).readableDate;
+    });
+  },
+});
 
 export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
   permissionPath: 'allow',
