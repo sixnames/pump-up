@@ -5,10 +5,11 @@ import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
 import { Separator } from '@/components/ui/separator';
-import { alwaysArray } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Workout, WorkoutSets } from '@/payload-types';
 import { Form, Formik } from 'formik';
+import set from 'lodash/set';
 import { nanoid } from 'nanoid';
 
 interface WorkoutFormProps {
@@ -31,6 +32,22 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
             errors.exercise = fieldLabels.exercise.singular.nominative;
           }
           const sets = alwaysArray(values.sets);
+
+          if (sets.length === 0) {
+            errors.sets = fieldLabels.sets.plural;
+          }
+
+          sets.forEach((setItem, setIndex) => {
+            const setFieldName = `${workoutFieldConfig.sets}[${setIndex}]`;
+            const repetitions = alwaysNumber(setItem.repetitions);
+            const weight = alwaysNumber(setItem.weight);
+            if (repetitions < 1) {
+              set(errors, `${setFieldName}.${workoutFieldConfig.repetitions}`, fieldLabels.repetitions.singular);
+            }
+            if (weight < 1) {
+              set(errors, `${setFieldName}.${workoutFieldConfig.weight}`, fieldLabels.weight.singular);
+            }
+          });
 
           return errors;
         }}
