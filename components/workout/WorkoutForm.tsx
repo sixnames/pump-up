@@ -50,6 +50,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                       <Separator className={'mb-5'} />
                       <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
                       <FkInput
+                        delay={0}
                         name={`${fieldName}.${workoutFieldConfig.weight}`}
                         label={{ label: fieldLabels.weight.singular }}
                         type={'number'}
@@ -59,6 +60,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                         }}
                       />
                       <FkInput
+                        delay={0}
                         name={`${fieldName}.${workoutFieldConfig.repetitions}`}
                         label={{ label: fieldLabels.repetitions.singular }}
                         type={'number'}

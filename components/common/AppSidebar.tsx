@@ -37,6 +37,9 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
       <SidebarGroupContent>
         <SidebarMenu>
           {Object.entries(navItems).map(([key, item]) => {
+            if (item.hidden) {
+              return null;
+            }
             const navItem = item as UrlConfigItem;
             const cleanHref = extractUrlString(navItem.url);
             const isActive = pathname.startsWith(cleanHref);

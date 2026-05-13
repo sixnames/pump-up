@@ -27,6 +27,7 @@ export type UrlConfigItem = {
   url: OdUrl;
   icon?: NavIconVariant;
   testId: string;
+  hidden?: boolean;
 };
 
 export type UrlConfigNoIconItem = Omit<UrlConfigItem, 'icon'>;
@@ -64,6 +65,7 @@ export const urlConfig: UrlConfig = {
         title: getUserActionTitle(fieldLabels.workout.singular).update,
         testId: `${navLikTestIdPrefix}-update-workout`,
         icon: 'plus',
+        hidden: true,
       },
     },
   },

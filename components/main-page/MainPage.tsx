@@ -35,7 +35,6 @@ export default function MainPage() {
         queryKey: getWorkoutsListQueryKey,
       });
     },
-    // refetchQueryKeys: () => [getWorkoutsListQueryKey],
   });
 
   return (
@@ -67,7 +66,7 @@ export default function MainPage() {
                         <Separator className={'mb-4'} />
                         <div className={'flex gap-4 items-start'}>
                           <div className={'flex-1'}>
-                            <div className={'text-lg mb-2 text-success'}>{exercise.label}</div>
+                            <div className={'mb-2 text-success'}>{exercise.label}</div>
 
                             <div className={'space-y-2'}>
                               {alwaysArray(workout.sets).map((set, setIndex) => {
