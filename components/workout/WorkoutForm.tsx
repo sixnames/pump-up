@@ -5,6 +5,7 @@ import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
 import { Separator } from '@/components/ui/separator';
+import { alwaysArray } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Workout, WorkoutSets } from '@/payload-types';
 import { Form, Formik } from 'formik';
@@ -22,6 +23,16 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         initialValues={initialValues}
         onSubmit={async (values) => {
           await onSubmit(values);
+        }}
+        validate={(values) => {
+          const errors: Partial<Record<keyof Workout, string>> = {};
+          const exercise = values.exercise;
+          if (!exercise) {
+            errors.exercise = fieldLabels.exercise.singular.nominative;
+          }
+          const sets = alwaysArray(values.sets);
+
+          return errors;
         }}
       >
         {() => {
@@ -70,7 +81,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                 }}
               />
 
-              <FkButton withKeyboardShortcut>
+              <FkButton withKeyboardShortcut showErrorsList>
                 {initialValues.id ? fieldLabels.update.action : fieldLabels.add.action}
               </FkButton>
             </Form>
