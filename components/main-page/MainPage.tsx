@@ -13,7 +13,7 @@ import { getWorkoutLink, urlConfig } from '@/lib/urlUtils';
 import { cn } from '@/lib/utils';
 import { Exercise } from '@/payload-types';
 import { useProgress } from '@bprogress/next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { PenIcon, XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -27,10 +27,15 @@ export default function MainPage() {
     queryKey: getWorkoutsListQueryKey,
     queryFn: () => getWorkoutsList(),
   });
+  const client = useQueryClient();
   const deleteWorkoutMutation = useOdMutation({
     action: deleteWorkout,
-    onSuccessCallback: async () => {},
-    refetchQueryKeys: () => [getWorkoutsListQueryKey],
+    onSuccessCallback: async () => {
+      await client.refetchQueries({
+        queryKey: getWorkoutsListQueryKey,
+      });
+    },
+    // refetchQueryKeys: () => [getWorkoutsListQueryKey],
   });
 
   return (
@@ -60,9 +65,9 @@ export default function MainPage() {
                     return (
                       <div key={workoutIndex}>
                         <Separator className={'mb-4'} />
-                        <div className={'flex gap-6'}>
+                        <div className={'flex gap-4 items-start'}>
                           <div className={'flex-1'}>
-                            <div className={'text-lg mb-2'}>{exercise.label}</div>
+                            <div className={'text-lg mb-2 text-success'}>{exercise.label}</div>
 
                             <div className={'space-y-2'}>
                               {alwaysArray(workout.sets).map((set, setIndex) => {
@@ -70,7 +75,7 @@ export default function MainPage() {
                                   <div className={''} key={set.id}>
                                     <div
                                       className={'text-muted-foreground mb-1'}
-                                    >{`${fieldLabels.set.singular} ${setIndex + 1}`}</div>
+                                    >{`${fieldLabels.sets.singular} ${setIndex + 1}`}</div>
 
                                     <div>{`${fieldLabels.weight.singular}: ${set.weight}`}</div>
                                     <div>{`${fieldLabels.repetitions.singular}: ${set.repetitions}`}</div>
