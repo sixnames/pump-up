@@ -35,7 +35,8 @@ export type UrlConfig = {
   app: {
     title: string;
     links: {
-      addWorkout: UrlConfigItem;
+      createWorkout: UrlConfigItem;
+      updateWorkout: UrlConfigItem;
     };
   };
   console: {
@@ -52,10 +53,16 @@ export const urlConfig: UrlConfig = {
   app: {
     title: fieldLabels.main.plural,
     links: {
-      addWorkout: {
-        url: '/add-workout',
-        title: getUserActionTitle(fieldLabels.workout.singular).add,
-        testId: `${navLikTestIdPrefix}-add-workout`,
+      createWorkout: {
+        url: '/create-workout',
+        title: getUserActionTitle(fieldLabels.workout.singular).create,
+        testId: `${navLikTestIdPrefix}-create-workout`,
+        icon: 'plus',
+      },
+      updateWorkout: {
+        url: '/update-workout',
+        title: getUserActionTitle(fieldLabels.workout.singular).update,
+        testId: `${navLikTestIdPrefix}-update-workout`,
         icon: 'plus',
       },
     },
@@ -72,6 +79,22 @@ export const urlConfig: UrlConfig = {
     },
   },
 };
+
+type WorkoutUrlConfigItem = {
+  root: UrlConfigItem;
+};
+
+export function getWorkoutLink(id: string): WorkoutUrlConfigItem {
+  const baseUrl = `${urlConfig.app.links.updateWorkout.url}/${id}`;
+
+  return {
+    root: {
+      title: fieldLabels.day.singular.nominative,
+      url: baseUrl as OdUrl,
+      testId: `${navLikTestIdPrefix}-day-item`,
+    },
+  };
+}
 
 // admin
 interface GetAdminUrlParams {

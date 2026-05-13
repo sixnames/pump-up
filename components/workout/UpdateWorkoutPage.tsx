@@ -1,21 +1,15 @@
 'use client';
 
-import { getWorkoutById, updateWorkout } from '@/collections/Workouts/actions';
-import OdNotFound from '@/components/common/OdNotFound';
-import OdQueryLoader from '@/components/common/OdQueryLoader';
+import { updateWorkout } from '@/collections/Workouts/actions';
 import WorkoutForm from '@/components/workout/WorkoutForm';
 import { useOdMutation } from '@/hooks/useOdMutation';
-import { useQuery } from '@tanstack/react-query';
+import { Workout } from '@/payload-types';
 
 interface UpdateWorkoutPageProps {
-  id: string;
+  workout: Workout;
 }
 
-export default function UpdateWorkoutPage({ id }: UpdateWorkoutPageProps) {
-  const workoutQuery = useQuery({
-    queryKey: ['workout', id],
-    queryFn: async () => getWorkoutById(id),
-  });
+export default function UpdateWorkoutPage({ workout }: UpdateWorkoutPageProps) {
   const updateWorkoutMutation = useOdMutation({
     action: updateWorkout,
     redirectTo: () => {
@@ -23,17 +17,9 @@ export default function UpdateWorkoutPage({ id }: UpdateWorkoutPageProps) {
     },
   });
 
-  if (workoutQuery.isLoading) {
-    return <OdQueryLoader />;
-  }
-
-  if (!workoutQuery.data) {
-    return <OdNotFound />;
-  }
-
   return (
     <WorkoutForm
-      initialValues={workoutQuery.data}
+      initialValues={workout}
       onSubmit={async (values) => {
         await updateWorkoutMutation.mutateAsync(values);
       }}

@@ -4,7 +4,7 @@ import { urlConfig } from '@/lib/urlUtils';
 import type { Metadata } from 'next';
 import CreateWorkoutPage from '../../../components/workout/CreateWorkoutPage';
 
-const pageConfig = urlConfig.app.links.addWorkout;
+const pageConfig = urlConfig.app.links.createWorkout;
 
 const title = pageConfig.title;
 
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   return (
     <ProtectedRoute>
-      <OdTitle testId={'add-workout-page'} breadcrumbs={[pageConfig]}>
+      <OdTitle testId={'create-workout-page'} breadcrumbs={[pageConfig]}>
         {title}
       </OdTitle>
       <CreateWorkoutPage />

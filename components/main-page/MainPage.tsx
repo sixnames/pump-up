@@ -24,10 +24,10 @@ export default function MainPage() {
       <div className={'space-y-2 mb-6'}>
         <OdButton
           onClick={() => {
-            router.push(urlConfig.app.links.addWorkout.url);
+            router.push(urlConfig.app.links.createWorkout.url);
           }}
         >
-          {urlConfig.app.links.addWorkout.title}
+          {urlConfig.app.links.createWorkout.title}
         </OdButton>
       </div>
       {getWorkoutsListQuery.isLoading ? <OdQueryLoader /> : null}
