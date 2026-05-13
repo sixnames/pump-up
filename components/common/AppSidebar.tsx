@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { extractUrlString, UrlConfig, urlConfig, UrlConfigItem } from '@/lib/urlUtils';
@@ -73,30 +74,26 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible={'icon'} variant={'floating'}>
       <SidebarHeader>
+        <div className={cn('px-0.5 pt-2')}>
+          <SidebarTrigger tabIndex={-1} className={'cursor-pointer'} />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              tabIndex={-1}
+            <button
+              className={cn('cursor-pointer flex gap-2 pl-0.5 mb-3 items-center')}
               onClick={() => router.push('/')}
-              className={cn('mt-3 mb-2', {
-                'px-0!': collapsed,
-              })}
             >
-              <div
-                className={cn('flex items-center justify-center transition-transform', {
-                  'md:transform md:translate-x-[-0.35rem]': collapsed,
-                })}
-              >
+              <span className={'pt-0.5'}>
                 <Logo size={'lg'} />
-              </div>
-              <div
+              </span>
+              <span
                 className={cn('grid flex-1 text-left text-sm leading-tight', {
                   'md:hidden': collapsed,
                 })}
               >
-                <span className="truncate font-semibold">PUMP UP</span>
-              </div>
-            </SidebarMenuButton>
+                <span className='truncate font-semibold'>PUMP UP</span>
+              </span>
+            </button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
