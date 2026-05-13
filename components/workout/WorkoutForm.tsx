@@ -1,11 +1,14 @@
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
+import FkArrayField from '@/components/formik/FkArrayField';
 import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
+import { Separator } from '@/components/ui/separator';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { Workout } from '@/payload-types';
+import { Workout, WorkoutSets } from '@/payload-types';
 import { Form, Formik } from 'formik';
+import { nanoid } from 'nanoid';
 
 interface WorkoutFormProps {
   initialValues: Partial<Workout>;
@@ -30,22 +33,41 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                 name={workoutFieldConfig.date}
                 label={{ label: fieldLabels.date.singular }}
               />
-              <FkInput
-                name={workoutFieldConfig.weight}
-                label={{ label: fieldLabels.weight.singular }}
-                type={'number'}
+              <FkArrayField<Partial<NonNullable<WorkoutSets>[number]>>
+                name={workoutFieldConfig.sets}
+                title={fieldLabels.sets.plural}
+                addButtonProps={{
+                  suffix: fieldLabels.sets.singular,
+                  emptyItem: () => {
+                    return {
+                      id: nanoid(),
+                    };
+                  },
+                }}
+                renderItem={({ fieldName, index, remove }) => {
+                  return (
+                    <div>
+                      <Separator className={'mb-5'} />
+                      <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
+                      <FkInput
+                        name={`${fieldName}.${workoutFieldConfig.weight}`}
+                        label={{ label: fieldLabels.weight.singular }}
+                        type={'number'}
+                        removeProps={{
+                          remove,
+                          skipConfirm: true,
+                        }}
+                      />
+                      <FkInput
+                        name={`${fieldName}.${workoutFieldConfig.repetitions}`}
+                        label={{ label: fieldLabels.repetitions.singular }}
+                        type={'number'}
+                      />
+                    </div>
+                  );
+                }}
               />
-              <FkInput
-                name={workoutFieldConfig.workWeight}
-                label={{ label: fieldLabels.workWeight.singular }}
-                type={'number'}
-              />
-              <FkInput
-                name={workoutFieldConfig.repetitions}
-                label={{ label: fieldLabels.repetitions.singular }}
-                type={'number'}
-              />
-              <FkInput name={workoutFieldConfig.sets} label={{ label: fieldLabels.sets.singular }} type={'number'} />
+
               <FkButton withKeyboardShortcut>
                 {initialValues.id ? fieldLabels.update.action : fieldLabels.add.action}
               </FkButton>
