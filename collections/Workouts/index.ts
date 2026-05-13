@@ -26,24 +26,21 @@ export const Workouts: CollectionConfig = {
       required: true,
     },
     {
-      type: 'number',
-      name: workoutFieldConfig.weight,
-      required: true,
-    },
-    {
-      type: 'number',
-      name: workoutFieldConfig.workWeight,
-      required: true,
-    },
-    {
-      type: 'number',
-      name: workoutFieldConfig.repetitions,
-      required: true,
-    },
-    {
-      type: 'number',
+      type: 'array',
       name: workoutFieldConfig.sets,
       required: true,
+      fields: [
+        {
+          type: 'number',
+          name: workoutFieldConfig.repetitions,
+          required: true,
+        },
+        {
+          type: 'number',
+          name: workoutFieldConfig.weight,
+          required: true,
+        },
+      ],
     },
     {
       type: 'relationship',

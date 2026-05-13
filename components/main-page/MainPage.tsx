@@ -1,29 +1,44 @@
 'use client';
-import { getWorkoutsList } from '@/collections/Workouts/actions';
+import { deleteWorkout, getWorkoutsList } from '@/collections/Workouts/actions';
 import OdButton from '@/components/buttons/OdButton';
+import OdConfirmButton from '@/components/buttons/OdConfirmButton';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { useOdMutation } from '@/hooks/useOdMutation';
+import { alwaysArray } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { urlConfig } from '@/lib/urlUtils';
+import { getWorkoutLink, urlConfig } from '@/lib/urlUtils';
+import { cn } from '@/lib/utils';
 import { Exercise } from '@/payload-types';
+import { useProgress } from '@bprogress/next';
 import { useQuery } from '@tanstack/react-query';
+import { PenIcon, XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export default function MainPage() {
   const router = useRouter();
+  const { start } = useProgress();
   const { user } = useGlobalConfigContext();
+  const getWorkoutsListQueryKey = ['getWorkoutsList', user?.id];
   const getWorkoutsListQuery = useQuery({
-    queryKey: ['getWorkoutsList', user?.id],
+    queryKey: getWorkoutsListQueryKey,
     queryFn: () => getWorkoutsList(),
   });
+  const deleteWorkoutMutation = useOdMutation({
+    action: deleteWorkout,
+    onSuccessCallback: async () => {},
+    refetchQueryKeys: () => [getWorkoutsListQueryKey],
+  });
+
   return (
     <div>
       <div className={'space-y-2 mb-6'}>
         <OdButton
           onClick={() => {
+            start();
             router.push(urlConfig.app.links.createWorkout.url);
           }}
         >
@@ -45,12 +60,55 @@ export default function MainPage() {
                     return (
                       <div key={workoutIndex}>
                         <Separator className={'mb-4'} />
-                        <div className={'text-lg mb-2'}>{exercise.label}</div>
+                        <div className={'flex gap-6'}>
+                          <div className={'flex-1'}>
+                            <div className={'text-lg mb-2'}>{exercise.label}</div>
 
-                        <div>{`${fieldLabels.weight.singular}: ${workout.weight}`}</div>
-                        <div>{`${fieldLabels.workWeight.singular}: ${workout.workWeight}`}</div>
-                        <div>{`${fieldLabels.repetitions.singular}: ${workout.repetitions}`}</div>
-                        <div>{`${fieldLabels.sets.singular}: ${workout.sets}`}</div>
+                            <div className={'space-y-2'}>
+                              {alwaysArray(workout.sets).map((set, setIndex) => {
+                                return (
+                                  <div className={''} key={set.id}>
+                                    <div
+                                      className={'text-muted-foreground mb-1'}
+                                    >{`${fieldLabels.set.singular} ${setIndex + 1}`}</div>
+
+                                    <div>{`${fieldLabels.weight.singular}: ${set.weight}`}</div>
+                                    <div>{`${fieldLabels.repetitions.singular}: ${set.repetitions}`}</div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className={'flex items-center gap-4'}>
+                            <OdButton
+                              className={cn('w-6 h-6 p-0 flex items-center justify-center cursor-pointer')}
+                              variant={'ghost'}
+                              onClick={async () => {
+                                start();
+                                router.push(getWorkoutLink(workout.id).root.url);
+                              }}
+                              type={'button'}
+                              tabIndex={-1}
+                            >
+                              <PenIcon className={'h-4 w-4 shrink-0 opacity-50'} />
+                            </OdButton>
+                            <OdConfirmButton
+                              button={{
+                                className: 'w-6 h-6 p-0 flex items-center justify-center cursor-pointer',
+                                variant: 'ghost',
+                              }}
+                              dialog={{
+                                title: `${fieldLabels.deleteConfirm.singular} ${fieldLabels.workout.singular.toLowerCase()}`,
+                                isDialogOpen: false,
+                                onConfirm: async () => {
+                                  await deleteWorkoutMutation.mutateAsync(workout.id);
+                                },
+                              }}
+                            >
+                              <XIcon className='h-4 w-4 shrink-0 opacity-50' />
+                            </OdConfirmButton>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}

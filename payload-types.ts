@@ -137,10 +137,11 @@ export interface Workout {
   id: string;
   userId: string;
   date: string;
-  weight: number;
-  workWeight: number;
-  repetitions: number;
-  sets: number;
+  sets: {
+    repetitions: number;
+    weight: number;
+    id?: string | null;
+  }[];
   exercise: string | Exercise;
   updatedAt: string;
   createdAt: string;
@@ -293,10 +294,13 @@ export interface ExercisesSelect<T extends boolean = true> {
 export interface WorkoutsSelect<T extends boolean = true> {
   userId?: T;
   date?: T;
-  weight?: T;
-  workWeight?: T;
-  repetitions?: T;
-  sets?: T;
+  sets?:
+    | T
+    | {
+        repetitions?: T;
+        weight?: T;
+        id?: T;
+      };
   exercise?: T;
   updatedAt?: T;
   createdAt?: T;

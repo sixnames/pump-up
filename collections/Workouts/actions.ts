@@ -1,7 +1,7 @@
 'use server';
 
 import { workoutsSlug } from '@/lib/collectionNames';
-import { alwaysNumber, alwaysString } from '@/lib/commonUtils';
+import { alwaysArray, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
 import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
@@ -54,10 +54,7 @@ export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
       data: {
         exercise: (params.exercise as Exercise)?.id,
         date: alwaysDate(params.date).toISOString(),
-        sets: alwaysNumber(params.sets),
-        repetitions: alwaysNumber(params.repetitions),
-        weight: alwaysNumber(params.weight),
-        workWeight: alwaysNumber(params.workWeight),
+        sets: alwaysArray(params.sets),
         userId: alwaysString(user?.id),
       },
     });
@@ -81,10 +78,7 @@ export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
       data: {
         exercise: (values.exercise as Exercise)?.id,
         date: alwaysDate(values.date).toISOString(),
-        sets: alwaysNumber(values.sets),
-        repetitions: alwaysNumber(values.repetitions),
-        weight: alwaysNumber(values.weight),
-        workWeight: alwaysNumber(values.workWeight),
+        sets: alwaysArray(values.sets),
         userId: alwaysString(user?.id),
       },
     });
@@ -93,6 +87,23 @@ export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
       status: TOAST_SUCCESS,
       message: messages.update.success(fieldLabels.workout.singular),
       data: workout,
+    };
+  },
+});
+
+export const deleteWorkout = odSafeMutation<null, string>({
+  permissionPath: 'allow',
+  key: 'deleteWorkout',
+  action: async (params, { payload, messages }) => {
+    await payload.delete({
+      collection: workoutsSlug,
+      id: alwaysString(params),
+    });
+
+    return {
+      status: TOAST_SUCCESS,
+      message: messages.delete.success(fieldLabels.workout.singular),
+      data: null,
     };
   },
 });
