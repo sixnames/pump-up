@@ -29,6 +29,7 @@ export const Workouts: CollectionConfig = {
       type: 'array',
       name: workoutFieldConfig.sets,
       required: true,
+      interfaceName: 'WorkoutSets',
       fields: [
         {
           type: 'number',

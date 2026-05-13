@@ -1,7 +1,7 @@
 'use server';
 
 import { workoutsSlug } from '@/lib/collectionNames';
-import { alwaysArray, alwaysString } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
 import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
@@ -52,10 +52,16 @@ export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
     const workout = await payload.create({
       collection: workoutsSlug,
       data: {
+        userId: alwaysString(user?.id),
         exercise: (params.exercise as Exercise)?.id,
         date: alwaysDate(params.date).toISOString(),
-        sets: alwaysArray(params.sets),
-        userId: alwaysString(user?.id),
+        sets: alwaysArray(params.sets).map((set) => {
+          return {
+            ...set,
+            repetitions: alwaysNumber(set.repetitions),
+            weight: alwaysNumber(set.weight),
+          };
+        }),
       },
     });
 
@@ -78,8 +84,14 @@ export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
       data: {
         exercise: (values.exercise as Exercise)?.id,
         date: alwaysDate(values.date).toISOString(),
-        sets: alwaysArray(values.sets),
         userId: alwaysString(user?.id),
+        sets: alwaysArray(params.sets).map((set) => {
+          return {
+            ...set,
+            repetitions: alwaysNumber(set.repetitions),
+            weight: alwaysNumber(set.weight),
+          };
+        }),
       },
     });
 

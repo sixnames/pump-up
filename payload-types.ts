@@ -7,6 +7,15 @@
  */
 
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkoutSets".
+ */
+export type WorkoutSets = {
+  repetitions: number;
+  weight: number;
+  id?: string | null;
+}[];
+/**
  * Supported timezones in IANA format.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -137,11 +146,7 @@ export interface Workout {
   id: string;
   userId: string;
   date: string;
-  sets: {
-    repetitions: number;
-    weight: number;
-    id?: string | null;
-  }[];
+  sets: WorkoutSets;
   exercise: string | Exercise;
   updatedAt: string;
   createdAt: string;
@@ -294,16 +299,19 @@ export interface ExercisesSelect<T extends boolean = true> {
 export interface WorkoutsSelect<T extends boolean = true> {
   userId?: T;
   date?: T;
-  sets?:
-    | T
-    | {
-        repetitions?: T;
-        weight?: T;
-        id?: T;
-      };
+  sets?: T | WorkoutSetsSelect<T>;
   exercise?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkoutSets_select".
+ */
+export interface WorkoutSetsSelect<T extends boolean = true> {
+  repetitions?: T;
+  weight?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
