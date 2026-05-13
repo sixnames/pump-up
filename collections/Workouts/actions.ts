@@ -32,6 +32,19 @@ export const getWorkoutsList = odSafeQuery<WorkoutsList | null, void>({
   },
 });
 
+export const getWorkoutById = odSafeQuery<Workout | null, string>({
+  key: 'getWorkoutById',
+  action: async ({ params, user, payload }) => {
+    if (!user) {
+      return null;
+    }
+    return await payload.findByID({
+      collection: workoutsSlug,
+      id: params,
+    });
+  },
+});
+
 export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
   permissionPath: 'allow',
   key: 'createWorkout',
@@ -52,6 +65,33 @@ export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
     return {
       status: TOAST_SUCCESS,
       message: messages.create.success(fieldLabels.workout.singular),
+      data: workout,
+    };
+  },
+});
+
+export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
+  permissionPath: 'allow',
+  key: 'updateWorkout',
+  action: async (params, { payload, user, messages }) => {
+    const { id, ...values } = params;
+    const workout = await payload.update({
+      collection: workoutsSlug,
+      id: alwaysString(id),
+      data: {
+        exercise: (values.exercise as Exercise)?.id,
+        date: alwaysDate(values.date).toISOString(),
+        sets: alwaysNumber(values.sets),
+        repetitions: alwaysNumber(values.repetitions),
+        weight: alwaysNumber(values.weight),
+        workWeight: alwaysNumber(values.workWeight),
+        userId: alwaysString(user?.id),
+      },
+    });
+
+    return {
+      status: TOAST_SUCCESS,
+      message: messages.update.success(fieldLabels.workout.singular),
       data: workout,
     };
   },

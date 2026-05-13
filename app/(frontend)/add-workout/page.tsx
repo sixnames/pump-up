@@ -1,8 +1,8 @@
-import AddWorkoutPage from '@/components/AddWorkoutPage';
 import OdTitle from '@/components/common/OdTitle';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 import { urlConfig } from '@/lib/urlUtils';
 import type { Metadata } from 'next';
+import CreateWorkoutPage from '../../../components/workout/CreateWorkoutPage';
 
 const pageConfig = urlConfig.app.links.addWorkout;
 
@@ -20,7 +20,7 @@ export default async function Page() {
       <OdTitle testId={'add-workout-page'} breadcrumbs={[pageConfig]}>
         {title}
       </OdTitle>
-      <AddWorkoutPage />
+      <CreateWorkoutPage />
     </ProtectedRoute>
   );
 }
