@@ -1,6 +1,6 @@
 import { commonFieldConfig } from '@/collections/coomonFieldConfig';
 
-export const exerciseFieldConfig = {
+export const exerciseGroupFieldConfig = {
   label: commonFieldConfig.label,
-  group: 'group',
+  exercises: commonFieldConfig.exercises,
 };

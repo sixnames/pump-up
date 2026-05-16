@@ -1,3 +1,4 @@
+import { ExerciseGroups } from '@/collections/ExerciseGroups';
 import { Exercises } from '@/collections/Exercises';
 import { Roles } from '@/collections/Roles';
 import { Workouts } from '@/collections/Workouts';
@@ -29,13 +30,13 @@ export default buildConfig({
     autoLogin:
       process.env.NODE_ENV === 'development'
         ? {
-          username: process.env.DEV_ADMIN_USERNAME,
-          password: process.env.DEV_ADMIN_PASSWORD,
-        }
+            username: process.env.DEV_ADMIN_USERNAME,
+            password: process.env.DEV_ADMIN_PASSWORD,
+          }
         : false,
   },
   globals: [],
-  collections: [Exercises, Workouts, Roles, Users],
+  collections: [ExerciseGroups, Exercises, Workouts, Roles, Users],
 
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

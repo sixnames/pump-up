@@ -1,5 +1,5 @@
 import { exerciseFieldConfig } from '@/collections/Exercises/fieldConfig';
-import { exercisesSlug } from '@/lib/collectionNames';
+import { exerciseGroupsSlug, exercisesSlug } from '@/lib/collectionNames';
 import { fieldLabels } from '@/lib/fieldLabels';
 import type { CollectionConfig } from 'payload';
 
@@ -17,6 +17,12 @@ export const Exercises: CollectionConfig = {
       name: exerciseFieldConfig.label,
       label: fieldLabels.label.singular,
       type: 'text',
+    },
+    {
+      name: exerciseFieldConfig.group,
+      label: fieldLabels.exerciseGroup.singular.nominative,
+      type: 'relationship',
+      relationTo: exerciseGroupsSlug,
     },
   ],
 };

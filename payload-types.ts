@@ -76,6 +76,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'exercise-groups': ExerciseGroup;
     exercises: Exercise;
     workouts: Workout;
     roles: Role;
@@ -85,8 +86,13 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'exercise-groups': {
+      exercises: 'exercises';
+    };
+  };
   collectionsSelect: {
+    'exercise-groups': ExerciseGroupsSelect<false> | ExerciseGroupsSelect<true>;
     exercises: ExercisesSelect<false> | ExercisesSelect<true>;
     workouts: WorkoutsSelect<false> | WorkoutsSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
@@ -130,11 +136,27 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exercise-groups".
+ */
+export interface ExerciseGroup {
+  id: string;
+  label?: string | null;
+  exercises?: {
+    docs?: (string | Exercise)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "exercises".
  */
 export interface Exercise {
   id: string;
   label?: string | null;
+  group?: (string | null) | ExerciseGroup;
   updatedAt: string;
   createdAt: string;
 }
@@ -226,6 +248,10 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'exercise-groups';
+        value: string | ExerciseGroup;
+      } | null)
+    | ({
         relationTo: 'exercises';
         value: string | Exercise;
       } | null)
@@ -285,10 +311,21 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exercise-groups_select".
+ */
+export interface ExerciseGroupsSelect<T extends boolean = true> {
+  label?: T;
+  exercises?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "exercises_select".
  */
 export interface ExercisesSelect<T extends boolean = true> {
   label?: T;
+  group?: T;
   updatedAt?: T;
   createdAt?: T;
 }

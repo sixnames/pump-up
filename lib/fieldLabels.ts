@@ -381,6 +381,22 @@ export const fieldLabels = {
       ablative: 'Вправами',
     },
   },
+  exerciseGroup: {
+    singular: {
+      nominative: 'Група вправ',
+      genitive: 'Групи вправ',
+      dative: 'Групі вправ',
+      accusative: 'Групу вправ',
+      ablative: 'Групою вправ',
+    },
+    plural: {
+      nominative: 'Групи вправ',
+      genitive: 'Груп вправ',
+      dative: 'Групам вправ',
+      accusative: 'Групи вправ',
+      ablative: 'Групами вправ',
+    },
+  },
   workout: {
     singular: 'Виконання вправи',
   },
