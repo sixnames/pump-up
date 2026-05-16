@@ -11,7 +11,7 @@ import { alwaysArray } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { getWorkoutLink, urlConfig } from '@/lib/urlUtils';
 import { cn } from '@/lib/utils';
-import { Exercise } from '@/payload-types';
+import { Exercise, ExerciseGroup } from '@/payload-types';
 import { useProgress } from '@bprogress/next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { PenIcon, XIcon } from 'lucide-react';
@@ -51,7 +51,7 @@ export default function MainPage() {
       </div>
       {getWorkoutsListQuery.isLoading ? <OdQueryLoader /> : null}
       {getWorkoutsListQuery.data ? (
-        <div>
+        <div className={'pb-12'}>
           {Object.entries(getWorkoutsListQuery.data).map(([date, workouts]) => {
             return (
               <Card key={date}>
@@ -61,12 +61,17 @@ export default function MainPage() {
                 <CardContent className={'space-y-4'}>
                   {workouts.map((workout, workoutIndex) => {
                     const exercise = workout.exercise as Exercise;
+                    const group = exercise.group as ExerciseGroup | undefined;
+
                     return (
                       <div key={workoutIndex}>
                         <Separator className={'mb-4'} />
                         <div className={'flex gap-4 items-start'}>
                           <div className={'flex-1'}>
-                            <div className={'mb-2 text-success'}>{exercise.label}</div>
+                            <div className={'mb-2 text-success flex gap-2'}>
+                              <span>{exercise.label}</span>
+                              {group ? <span>{`(${group.label})`}</span> : null}
+                            </div>
 
                             <div className={'space-y-2'}>
                               {alwaysArray(workout.sets).map((set, setIndex) => {
