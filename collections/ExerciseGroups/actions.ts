@@ -7,13 +7,13 @@ import { exerciseGroupsSlug } from '@/lib/collectionNames';
 import { SORT_ASC_STR } from '@/lib/constants';
 import { odSafeQuery } from '@/lib/safeAction';
 
-export const getExerciseGroupOptions = odSafeQuery<QueryComboOption[], string | undefined>({
+export const getExerciseGroupOptions = odSafeQuery<QueryComboOption[], void>({
   key: 'getExerciseGroupOptions',
-  action: async ({ payload, params }) => {
+  action: async ({ payload }) => {
     return getComboOptions({
       payload,
       collectionName: exerciseGroupsSlug,
-      query: params,
+      query: '',
       searchableField: exerciseGroupFieldConfig.label,
       sortableField: exerciseGroupFieldConfig.label,
       sortDirection: SORT_ASC_STR,

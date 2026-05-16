@@ -8,16 +8,21 @@ import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise } from '@/payload-types';
 import * as React from 'react';
 
-export function ExercisesCombo({ selectedOption, ...props }: QueryComboConsumerSingleProps<Exercise>) {
+interface ExercisesComboProps extends QueryComboConsumerSingleProps<Exercise> {
+  groupId?: string;
+}
+
+export function ExercisesCombo({ selectedOption, groupId, ...props }: ExercisesComboProps) {
   return (
     <QueryCombo<Exercise>
       {...props}
       label={{
         label: fieldLabels.exercise.singular.nominative,
+        required: true,
       }}
       selectedOptions={alwaysArray(selectedOption)}
       collectionName={exercisesSlug}
-      queryFn={getExerciseOptions}
+      queryFn={(query) => getExerciseOptions({ query, groupId })}
     />
   );
 }

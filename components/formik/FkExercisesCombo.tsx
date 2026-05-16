@@ -3,7 +3,11 @@ import { FKQueryComboConsumerSingleProps } from '@/components/combobox/QueryComb
 import { Exercise } from '@/payload-types';
 import { useField } from 'formik';
 
-export default function FkExercisesCombo(props: FKQueryComboConsumerSingleProps<Exercise>) {
+interface FkExercisesComboProps extends FKQueryComboConsumerSingleProps<Exercise> {
+  groupId?: string;
+}
+
+export default function FkExercisesCombo(props: FkExercisesComboProps) {
   const [{ value }, { error }, { setValue }] = useField<Exercise | undefined | null>(props.name);
 
   const testId = props.testId || props.name;
@@ -11,6 +15,7 @@ export default function FkExercisesCombo(props: FKQueryComboConsumerSingleProps<
   return (
     <ExercisesCombo
       {...props}
+      disabled={!props.groupId}
       testId={testId}
       withError={Boolean(error)}
       selectedOption={value}

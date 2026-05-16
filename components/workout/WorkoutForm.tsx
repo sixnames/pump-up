@@ -1,16 +1,21 @@
+import { getExerciseGroupOptions } from '@/collections/ExerciseGroups/actions';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
+import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
 import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
+import OdSelect from '@/components/forms/OdSelect';
 import { Separator } from '@/components/ui/separator';
-import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Workout, WorkoutSets } from '@/payload-types';
+import { useQuery } from '@tanstack/react-query';
 import { Form, Formik } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
+import { useState } from 'react';
 
 interface WorkoutFormProps {
   initialValues: Partial<Workout>;
@@ -18,6 +23,23 @@ interface WorkoutFormProps {
 }
 
 export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProps) {
+  const [groupId, setGroupId] = useState<string | undefined>();
+  const exerciseGroupOptionsQuery = useQuery({
+    queryKey: ['exercise-group-options'],
+    queryFn: async () => getExerciseGroupOptions(),
+  });
+
+  if (exerciseGroupOptionsQuery.isLoading) {
+    return <OdQueryLoader />;
+  }
+
+  const exerciseGroupOptions = alwaysArray(exerciseGroupOptionsQuery.data).map((group) => {
+    return {
+      value: alwaysString(group.id),
+      label: alwaysString(group.label),
+    };
+  });
+
   return (
     <div className={'max-w-140 mx-auto'}>
       <Formik<Partial<Workout>>
@@ -55,7 +77,17 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         {() => {
           return (
             <Form>
-              <FkExercisesCombo name={workoutFieldConfig.exercise} />
+              <OdSelect
+                name={'group'}
+                options={exerciseGroupOptions}
+                label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
+                value={groupId}
+                setValue={async (value) => {
+                  setGroupId(value?.value);
+                }}
+              />
+              <FkExercisesCombo groupId={groupId} name={workoutFieldConfig.exercise} />
+
               <FkDatePicker
                 hideTimeInputs
                 name={workoutFieldConfig.date}
