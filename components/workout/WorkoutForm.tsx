@@ -10,7 +10,7 @@ import OdSelect from '@/components/forms/OdSelect';
 import { Separator } from '@/components/ui/separator';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { Workout, WorkoutSets } from '@/payload-types';
+import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { useQuery } from '@tanstack/react-query';
 import { Form, Formik } from 'formik';
 import set from 'lodash/set';
@@ -49,7 +49,8 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         }}
         validate={(values) => {
           const errors: Partial<Record<keyof Workout, string>> = {};
-          const exercise = values.exercise;
+          const exercise = values.exercise as Exercise | undefined;
+          const fields = alwaysArray(exercise?.fields);
           if (!exercise) {
             errors.exercise = fieldLabels.exercise.singular.nominative;
           }
@@ -61,20 +62,21 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
 
           sets.forEach((setItem, setIndex) => {
             const setFieldName = `${workoutFieldConfig.sets}[${setIndex}]`;
-            const repetitions = alwaysNumber(setItem.repetitions);
-            const weight = alwaysNumber(setItem.weight);
-            if (repetitions < 1) {
-              set(errors, `${setFieldName}.${workoutFieldConfig.repetitions}`, fieldLabels.repetitions.singular);
-            }
-            if (weight < 1) {
-              set(errors, `${setFieldName}.${workoutFieldConfig.weight}`, fieldLabels.weight.singular);
-            }
+            fields.forEach((field) => {
+              const value = alwaysNumber(setItem[field]);
+              if (alwaysNumber(value) < 1) {
+                set(errors, `${setFieldName}.${field}`, fieldLabels[field]?.singular);
+              }
+            });
           });
 
           return errors;
         }}
       >
-        {() => {
+        {({ values }) => {
+          const exercise = values.exercise as Exercise | undefined;
+          const fields = alwaysArray(exercise?.fields);
+
           return (
             <Form>
               <OdSelect
@@ -109,22 +111,21 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                     <div>
                       <Separator className={'mb-5'} />
                       <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
-                      <FkInput
-                        delay={0}
-                        name={`${fieldName}.${workoutFieldConfig.weight}`}
-                        label={{ label: fieldLabels.weight.singular }}
-                        type={'number'}
-                        removeProps={{
-                          remove,
-                          skipConfirm: true,
-                        }}
-                      />
-                      <FkInput
-                        delay={0}
-                        name={`${fieldName}.${workoutFieldConfig.repetitions}`}
-                        label={{ label: fieldLabels.repetitions.singular }}
-                        type={'number'}
-                      />
+                      {fields.map((field) => {
+                        return (
+                          <FkInput
+                            key={field}
+                            delay={0}
+                            name={`${fieldName}.${field}`}
+                            label={{ label: fieldLabels[field]?.singular }}
+                            type={'number'}
+                            removeProps={{
+                              remove,
+                              skipConfirm: true,
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   );
                 }}

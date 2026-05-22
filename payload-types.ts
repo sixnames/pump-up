@@ -11,8 +11,12 @@
  * via the `definition` "WorkoutSets".
  */
 export type WorkoutSets = {
-  repetitions: number;
   weight: number;
+  repetitions: number;
+  speed: number;
+  minutes: number;
+  distance: number;
+  incline: number;
   id?: string | null;
 }[];
 /**
@@ -157,6 +161,7 @@ export interface Exercise {
   id: string;
   label?: string | null;
   group?: (string | null) | ExerciseGroup;
+  fields?: ('weight' | 'repetitions' | 'speed' | 'minutes' | 'distance' | 'incline')[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -326,6 +331,7 @@ export interface ExerciseGroupsSelect<T extends boolean = true> {
 export interface ExercisesSelect<T extends boolean = true> {
   label?: T;
   group?: T;
+  fields?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -346,8 +352,12 @@ export interface WorkoutsSelect<T extends boolean = true> {
  * via the `definition` "WorkoutSets_select".
  */
 export interface WorkoutSetsSelect<T extends boolean = true> {
-  repetitions?: T;
   weight?: T;
+  repetitions?: T;
+  speed?: T;
+  minutes?: T;
+  distance?: T;
+  incline?: T;
   id?: T;
 }
 /**

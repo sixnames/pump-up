@@ -1,7 +1,17 @@
 import { exerciseFieldConfig } from '@/collections/Exercises/fieldConfig';
+import { setFields } from '@/collections/Workouts';
+import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import { exerciseGroupsSlug, exercisesSlug } from '@/lib/collectionNames';
+import { alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import type { CollectionConfig } from 'payload';
+
+const fieldOptions = setFields.map((field) => {
+  return {
+    value: field.name,
+    label: alwaysString(field.label),
+  };
+});
 
 export const Exercises: CollectionConfig = {
   slug: exercisesSlug,
@@ -23,6 +33,14 @@ export const Exercises: CollectionConfig = {
       label: fieldLabels.exerciseGroup.singular.nominative,
       type: 'relationship',
       relationTo: exerciseGroupsSlug,
+    },
+    {
+      name: exerciseFieldConfig.fields,
+      label: fieldLabels.exerciseGroup.singular.nominative,
+      type: 'select',
+      hasMany: true,
+      options: fieldOptions,
+      defaultValue: [workoutFieldConfig.weight, workoutFieldConfig.repetitions],
     },
   ],
 };

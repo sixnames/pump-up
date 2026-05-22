@@ -5,7 +5,10 @@ export const workoutFieldConfig = {
   userId: 'userId',
   date: commonFieldConfig.date,
   weight: 'weight',
-  workWeight: 'workWeight',
   repetitions: 'repetitions',
   sets: 'sets',
+  incline: 'incline',
+  speed: 'speed',
+  distance: 'distance',
+  minutes: 'minutes',
 };

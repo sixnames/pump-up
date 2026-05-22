@@ -403,11 +403,20 @@ export const fieldLabels = {
   weight: {
     singular: 'Вага',
   },
-  workWeight: {
-    singular: 'Робоча вага',
-  },
   repetitions: {
     singular: 'Кількість повторювань',
+  },
+  incline: {
+    singular: 'Нахил',
+  },
+  speed: {
+    singular: 'Швидкість',
+  },
+  distance: {
+    singular: 'Дистанція',
+  },
+  minutes: {
+    singular: 'Хвилини',
   },
   sets: {
     singular: 'Підхід',
