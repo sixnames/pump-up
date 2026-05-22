@@ -25,7 +25,7 @@ export const setFields: (NumberField | TextField)[] = [
     required: true,
     defaultValue: 0,
     admin: {
-      description: 'Наприклад "1км в хвилину"',
+      description: 'Наприклад "1км на хвилину"',
     },
   },
   {
