@@ -6,10 +6,12 @@ import { alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import type { CollectionConfig } from 'payload';
 
-const fieldOptions = setFields.map((field) => {
+export const exerciseFieldOptions = setFields.map((field) => {
   return {
     value: field.name,
     label: alwaysString(field.label),
+    type: field.type,
+    description: alwaysString(field.admin?.description),
   };
 });
 
@@ -39,7 +41,7 @@ export const Exercises: CollectionConfig = {
       label: fieldLabels.exerciseGroup.singular.nominative,
       type: 'select',
       hasMany: true,
-      options: fieldOptions,
+      options: exerciseFieldOptions,
       defaultValue: [workoutFieldConfig.weight, workoutFieldConfig.repetitions],
     },
   ],

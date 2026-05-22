@@ -1,4 +1,5 @@
 'use client';
+import { exerciseFieldOptions } from '@/collections/Exercises';
 import { deleteWorkout, getWorkoutsList } from '@/collections/Workouts/actions';
 import OdButton from '@/components/buttons/OdButton';
 import OdConfirmButton from '@/components/buttons/OdConfirmButton';
@@ -7,7 +8,7 @@ import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOdMutation } from '@/hooks/useOdMutation';
-import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { getWorkoutLink, urlConfig } from '@/lib/urlUtils';
 import { cn } from '@/lib/utils';
@@ -83,11 +84,18 @@ export default function MainPage() {
                                     >{`${fieldLabels.sets.singular} ${setIndex + 1}`}</div>
 
                                     {fields.map((field) => {
-                                      return (
-                                        <div
-                                          key={field}
-                                        >{`${fieldLabels[field]?.singular}: ${alwaysNumber(set[field])}`}</div>
-                                      );
+                                      const option = exerciseFieldOptions.find((option) => {
+                                        return field === option.value;
+                                      });
+                                      if (!option) {
+                                        return null;
+                                      }
+                                      let value: number | string = alwaysNumber(set[field]);
+                                      if (option.type === 'text') {
+                                        value = alwaysString(set[field]);
+                                      }
+
+                                      return <div key={field}>{`${fieldLabels[field]?.singular}: ${value}`}</div>;
                                     })}
                                   </div>
                                 );

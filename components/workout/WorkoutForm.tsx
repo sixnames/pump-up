@@ -1,4 +1,5 @@
 import { getExerciseGroupOptions } from '@/collections/ExerciseGroups/actions';
+import { exerciseFieldOptions } from '@/collections/Exercises';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
@@ -63,8 +64,19 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
           sets.forEach((setItem, setIndex) => {
             const setFieldName = `${workoutFieldConfig.sets}[${setIndex}]`;
             fields.forEach((field) => {
-              const value = alwaysNumber(setItem[field]);
-              if (alwaysNumber(value) < 1) {
+              const option = exerciseFieldOptions.find((option) => {
+                return field === option.value;
+              });
+              if (!option) {
+                return;
+              }
+              const value = setItem[field];
+
+              if (option.type === 'number' && alwaysNumber(value) < 1) {
+                set(errors, `${setFieldName}.${field}`, fieldLabels[field]?.singular);
+              }
+
+              if (option.type === 'text' && alwaysString(value).length < 1) {
                 set(errors, `${setFieldName}.${field}`, fieldLabels[field]?.singular);
               }
             });
@@ -112,13 +124,21 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
                       <Separator className={'mb-5'} />
                       <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
                       {fields.map((field) => {
+                        const option = exerciseFieldOptions.find((option) => {
+                          return field === option.value;
+                        });
+
+                        if (!option) {
+                          return null;
+                        }
+
                         return (
                           <FkInput
                             key={field}
                             delay={0}
                             name={`${fieldName}.${field}`}
-                            label={{ label: fieldLabels[field]?.singular }}
-                            type={'number'}
+                            label={{ label: fieldLabels[field]?.singular, description: option.description }}
+                            type={option?.type}
                             removeProps={{
                               remove,
                               skipConfirm: true,

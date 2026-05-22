@@ -20,7 +20,7 @@ function getPageTitle(item?: Workout | null) {
     return '';
   }
   const exercise = item.exercise as Exercise;
-  return `${exercise.label} ${getReadableDate({ date: item?.date })}`;
+  return `${exercise.label} ${getReadableDate({ date: item?.date }).readableDate}`;
 }
 
 interface Props {

@@ -1,9 +1,9 @@
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import { exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
 import { fieldLabels } from '@/lib/fieldLabels';
-import type { CollectionConfig, NumberField } from 'payload';
+import type { CollectionConfig, NumberField, TextField } from 'payload';
 
-export const setFields: NumberField[] = [
+export const setFields: (NumberField | TextField)[] = [
   {
     type: 'number',
     name: workoutFieldConfig.weight,
@@ -19,11 +19,14 @@ export const setFields: NumberField[] = [
     defaultValue: 0,
   },
   {
-    type: 'number',
+    type: 'text',
     name: workoutFieldConfig.speed,
     label: fieldLabels.speed.singular,
     required: true,
     defaultValue: 0,
+    admin: {
+      description: 'Наприклад "1км в хвилину"',
+    },
   },
   {
     type: 'number',

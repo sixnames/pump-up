@@ -13,7 +13,10 @@
 export type WorkoutSets = {
   weight: number;
   repetitions: number;
-  speed: number;
+  /**
+   * Наприклад "1км в хвилину"
+   */
+  speed: string;
   minutes: number;
   distance: number;
   incline: number;
