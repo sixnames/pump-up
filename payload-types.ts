@@ -11,15 +11,15 @@
  * via the `definition` "WorkoutSets".
  */
 export type WorkoutSets = {
-  weight: number;
-  repetitions: number;
+  weight?: number | null;
+  repetitions?: number | null;
   /**
    * Наприклад "1км на хвилину"
    */
-  speed: string;
-  minutes: number;
-  distance: number;
-  incline: number;
+  speed?: string | null;
+  minutes?: number | null;
+  distance?: number | null;
+  incline?: number | null;
   id?: string | null;
 }[];
 /**

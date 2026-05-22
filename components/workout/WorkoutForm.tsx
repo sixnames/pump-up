@@ -1,5 +1,6 @@
 import { getExerciseGroupOptions } from '@/collections/ExerciseGroups/actions';
 import { exerciseFieldOptions } from '@/collections/Exercises';
+import { getLastSimilarWorkout } from '@/collections/Workouts/actions';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
@@ -13,24 +14,32 @@ import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { useQuery } from '@tanstack/react-query';
-import { Form, Formik } from 'formik';
+import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
 
-interface WorkoutFormProps {
-  initialValues: Partial<Workout>;
-  onSubmit: (values: Partial<Workout>) => Promise<void>;
-}
+function WorkoutFormFields() {
+  const { values } = useFormikContext<Partial<Workout>>();
+  const exercise = values.exercise as Exercise | undefined;
+  const fields = alwaysArray(exercise?.fields);
 
-export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProps) {
   const [groupId, setGroupId] = useState<string | undefined>();
+  const getLastSimilarWorkoutQuery = useQuery({
+    queryKey: ['last-similar-workout', exercise?.id],
+    enabled: !!exercise,
+    queryFn: async () => getLastSimilarWorkout(alwaysString(exercise?.id)),
+  });
   const exerciseGroupOptionsQuery = useQuery({
     queryKey: ['exercise-group-options'],
     queryFn: async () => getExerciseGroupOptions(),
   });
 
   if (exerciseGroupOptionsQuery.isLoading) {
+    return <OdQueryLoader />;
+  }
+
+  if (getLastSimilarWorkoutQuery.isLoading) {
     return <OdQueryLoader />;
   }
 
@@ -41,6 +50,90 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
     };
   });
 
+  const lastSimilarWorkoutSets = alwaysArray(getLastSimilarWorkoutQuery.data?.sets);
+
+  return (
+    <Form>
+      <OdSelect
+        name={'group'}
+        options={exerciseGroupOptions}
+        label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
+        value={groupId}
+        setValue={async (value) => {
+          setGroupId(value?.value);
+        }}
+      />
+      <FkExercisesCombo groupId={groupId} name={workoutFieldConfig.exercise} />
+
+      <FkDatePicker hideTimeInputs name={workoutFieldConfig.date} label={{ label: fieldLabels.date.singular }} />
+      <FkArrayField<Partial<NonNullable<WorkoutSets>[number]>>
+        name={workoutFieldConfig.sets}
+        title={fieldLabels.sets.plural}
+        addButtonProps={{
+          suffix: fieldLabels.sets.singular,
+          emptyItem: () => {
+            return {
+              id: nanoid(),
+            };
+          },
+        }}
+        renderItem={({ fieldName, index, remove }) => {
+          const prevSet = lastSimilarWorkoutSets[index];
+
+          return (
+            <div>
+              <Separator className={'mb-5'} />
+              <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
+              {fields.map((field, index) => {
+                const option = exerciseFieldOptions.find((option) => {
+                  return field === option.value;
+                });
+
+                if (!option) {
+                  return null;
+                }
+
+                const prevValue = prevSet?.[field];
+
+                return (
+                  <div className={'mb-6'} key={field}>
+                    <FkInput
+                      className={'mb-0'}
+                      delay={0}
+                      name={`${fieldName}.${field}`}
+                      label={{ label: fieldLabels[field]?.singular, description: option.description }}
+                      type={option?.type}
+                      removeProps={
+                        index === 0
+                          ? {
+                              remove,
+                              skipConfirm: true,
+                            }
+                          : undefined
+                      }
+                    />
+                    {prevValue ? <div className={' mt-2'}>{`Минулого разу: ${prevValue}`}</div> : null}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }}
+      />
+
+      <FkButton withKeyboardShortcut showErrorsList>
+        {values.id ? fieldLabels.update.action : fieldLabels.add.action}
+      </FkButton>
+    </Form>
+  );
+}
+
+interface WorkoutFormProps {
+  initialValues: Partial<Workout>;
+  onSubmit: (values: Partial<Workout>) => Promise<void>;
+}
+
+export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProps) {
   return (
     <div className={'max-w-140 mx-auto'}>
       <Formik<Partial<Workout>>
@@ -85,77 +178,8 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
           return errors;
         }}
       >
-        {({ values }) => {
-          const exercise = values.exercise as Exercise | undefined;
-          const fields = alwaysArray(exercise?.fields);
-
-          return (
-            <Form>
-              <OdSelect
-                name={'group'}
-                options={exerciseGroupOptions}
-                label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
-                value={groupId}
-                setValue={async (value) => {
-                  setGroupId(value?.value);
-                }}
-              />
-              <FkExercisesCombo groupId={groupId} name={workoutFieldConfig.exercise} />
-
-              <FkDatePicker
-                hideTimeInputs
-                name={workoutFieldConfig.date}
-                label={{ label: fieldLabels.date.singular }}
-              />
-              <FkArrayField<Partial<NonNullable<WorkoutSets>[number]>>
-                name={workoutFieldConfig.sets}
-                title={fieldLabels.sets.plural}
-                addButtonProps={{
-                  suffix: fieldLabels.sets.singular,
-                  emptyItem: () => {
-                    return {
-                      id: nanoid(),
-                    };
-                  },
-                }}
-                renderItem={({ fieldName, index, remove }) => {
-                  return (
-                    <div>
-                      <Separator className={'mb-5'} />
-                      <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
-                      {fields.map((field) => {
-                        const option = exerciseFieldOptions.find((option) => {
-                          return field === option.value;
-                        });
-
-                        if (!option) {
-                          return null;
-                        }
-
-                        return (
-                          <FkInput
-                            key={field}
-                            delay={0}
-                            name={`${fieldName}.${field}`}
-                            label={{ label: fieldLabels[field]?.singular, description: option.description }}
-                            type={option?.type}
-                            removeProps={{
-                              remove,
-                              skipConfirm: true,
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                }}
-              />
-
-              <FkButton withKeyboardShortcut showErrorsList>
-                {initialValues.id ? fieldLabels.update.action : fieldLabels.add.action}
-              </FkButton>
-            </Form>
-          );
+        {() => {
+          return <WorkoutFormFields />;
         }}
       </Formik>
     </div>

@@ -104,6 +104,29 @@ export const getWorkoutById = odSafeQuery<Workout | null, string>({
   },
 });
 
+export const getLastSimilarWorkout = odSafeQuery<Workout | null, string>({
+  key: 'getLastSimilarWorkout',
+  action: async ({ params, user, payload }) => {
+    if (!user) {
+      return null;
+    }
+
+    const data = await payload.find({
+      collection: workoutsSlug,
+      limit: 1,
+      where: {
+        userId: {
+          equals: user.id,
+        },
+        exercise: {
+          equals: params,
+        },
+      },
+    });
+    return data.docs[0];
+  },
+});
+
 export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
   permissionPath: 'allow',
   key: 'createWorkout',

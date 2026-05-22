@@ -8,22 +8,16 @@ export const setFields: (NumberField | TextField)[] = [
     type: 'number',
     name: workoutFieldConfig.weight,
     label: fieldLabels.weight.singular,
-    required: true,
-    defaultValue: 0,
   },
   {
     type: 'number',
     name: workoutFieldConfig.repetitions,
     label: fieldLabels.repetitions.singular,
-    required: true,
-    defaultValue: 0,
   },
   {
     type: 'text',
     name: workoutFieldConfig.speed,
     label: fieldLabels.speed.singular,
-    required: true,
-    defaultValue: 0,
     admin: {
       description: 'Наприклад "1км на хвилину"',
     },
@@ -32,22 +26,16 @@ export const setFields: (NumberField | TextField)[] = [
     type: 'number',
     name: workoutFieldConfig.minutes,
     label: fieldLabels.minutes.singular,
-    required: true,
-    defaultValue: 0,
   },
   {
     type: 'number',
     name: workoutFieldConfig.distance,
     label: fieldLabels.distance.singular,
-    required: true,
-    defaultValue: 0,
   },
   {
     type: 'number',
     name: workoutFieldConfig.incline,
     label: fieldLabels.incline.singular,
-    required: true,
-    defaultValue: 0,
   },
 ];
 
@@ -57,6 +45,7 @@ export const Workouts: CollectionConfig = {
     singular: fieldLabels.workout.singular,
     plural: fieldLabels.workout.singular,
   },
+  defaultSort: `-${workoutFieldConfig.date}`,
   admin: {
     hidden: true,
   },
