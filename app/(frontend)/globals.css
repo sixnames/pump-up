@@ -122,7 +122,7 @@
     --error: hsl(0, 72%, 51%);
     --error-hover: hsl(0, 72%, 35%);
     --warning: hsl(26, 100%, 58%);
-    --success: hsl(121, 67%, 38%);
+    --success: #86c819;
     --highlight: hsl(205, 100%, 40%);
     --subtitle: hsl(211, 20%, 46%);
 
@@ -190,7 +190,7 @@
     --error: hsl(0, 72%, 51%);
     --error-hover: hsl(0, 72%, 35%);
     --warning: hsl(27, 96%, 61%);
-    --success: hsl(121, 60%, 55%);
+    --success: #86c819;
     --highlight: hsl(205, 100%, 50%);
     --subtitle: hsl(214, 22%, 62%);
 

@@ -26,7 +26,7 @@ const LoaderContextProvider = ({ children }: LoaderContextProviderProps) => {
   };
 
   return (
-    <ProgressProvider height='3px' color='hsl(0, 72%, 51%)' options={{ showSpinner: false }}>
+    <ProgressProvider height='3px' color='#86c819' options={{ showSpinner: false }}>
       <LoaderContext.Provider value={{ showLoader, hideLoader }}>
         {children}
         {show ? (
