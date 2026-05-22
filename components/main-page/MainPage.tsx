@@ -7,7 +7,7 @@ import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useOdMutation } from '@/hooks/useOdMutation';
-import { alwaysArray } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { getWorkoutLink, urlConfig } from '@/lib/urlUtils';
 import { cn } from '@/lib/utils';
@@ -51,7 +51,7 @@ export default function MainPage() {
       </div>
       {getWorkoutsListQuery.isLoading ? <OdQueryLoader /> : null}
       {getWorkoutsListQuery.data ? (
-        <div className={'pb-12'}>
+        <div className={'pb-12 space-y-6'}>
           {Object.entries(getWorkoutsListQuery.data).map(([date, workouts]) => {
             return (
               <Card key={date}>
@@ -61,6 +61,7 @@ export default function MainPage() {
                 <CardContent className={'space-y-4'}>
                   {workouts.map((workout, workoutIndex) => {
                     const exercise = workout.exercise as Exercise;
+                    const fields = alwaysArray(exercise?.fields);
                     const group = exercise.group as ExerciseGroup | undefined;
 
                     return (
@@ -81,8 +82,13 @@ export default function MainPage() {
                                       className={'text-muted-foreground mb-1'}
                                     >{`${fieldLabels.sets.singular} ${setIndex + 1}`}</div>
 
-                                    <div>{`${fieldLabels.weight.singular}: ${set.weight}`}</div>
-                                    <div>{`${fieldLabels.repetitions.singular}: ${set.repetitions}`}</div>
+                                    {fields.map((field) => {
+                                      return (
+                                        <div
+                                          key={field}
+                                        >{`${fieldLabels[field]?.singular}: ${alwaysNumber(set[field])}`}</div>
+                                      );
+                                    })}
                                   </div>
                                 );
                               })}
