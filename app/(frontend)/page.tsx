@@ -1,5 +1,5 @@
 import OdTitle from '@/components/common/OdTitle';
-import MainPage from '@/components/main-page/MainPage';
+import WorkoutsPage from '@/components/main-page/WorkoutsPage';
 import type { Metadata } from 'next';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
 
@@ -17,7 +17,7 @@ export default async function Page() {
       <OdTitle testId={'main-page'} breadcrumbs={[]}>
         {title}
       </OdTitle>
-      <MainPage />
+      <WorkoutsPage />
     </ProtectedRoute>
   );
 }

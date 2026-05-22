@@ -7,7 +7,66 @@ import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, Workout } from '@/payload-types';
+import { endOfDay, startOfDay } from 'date-fns';
 import { groupBy } from 'lodash';
+
+export const getWorkoutDates = odSafeQuery<string[], void>({
+  key: 'getWorkoutDates',
+  action: async ({ user, payload }) => {
+    if (!user) {
+      return [];
+    }
+    const workouts = await payload.find({
+      pagination: false,
+      collection: workoutsSlug,
+      where: {
+        userId: {
+          equals: user.id,
+        },
+      },
+      select: {
+        date: true,
+      },
+    });
+    const groups = groupBy(workouts.docs, (item) => {
+      return startOfDay(item.date);
+    });
+    return Object.keys(groups);
+  },
+});
+
+export const getWorkoutsOnDate = odSafeQuery<Workout[], string>({
+  key: 'getWorkoutsOnDate',
+  action: async ({ user, payload, params }) => {
+    if (!user) {
+      return [];
+    }
+    const workouts = await payload.find({
+      pagination: false,
+      collection: workoutsSlug,
+      where: {
+        and: [
+          {
+            userId: {
+              equals: user.id,
+            },
+          },
+          {
+            date: {
+              less_than: endOfDay(params),
+            },
+          },
+          {
+            date: {
+              greater_than: startOfDay(params),
+            },
+          },
+        ],
+      },
+    });
+    return alwaysArray(workouts.docs);
+  },
+});
 
 export type WorkoutsList = Record<string, Workout[]>;
 
