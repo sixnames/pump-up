@@ -15,12 +15,9 @@ export const setFields: (NumberField | TextField)[] = [
     label: fieldLabels.repetitions.singular,
   },
   {
-    type: 'text',
+    type: 'number',
     name: workoutFieldConfig.speed,
     label: fieldLabels.speed.singular,
-    admin: {
-      description: 'Наприклад "1км на хвилину"',
-    },
   },
   {
     type: 'number',
