@@ -15,14 +15,15 @@ export const ExerciseGroups: CollectionConfig = {
   },
   fields: [
     {
+      type: 'text',
       name: exerciseGroupFieldConfig.label,
       label: fieldLabels.label.singular,
-      type: 'text',
+      required: true,
     },
     {
+      type: 'join',
       name: exerciseGroupFieldConfig.exercises,
       label: fieldLabels.exercise.plural.nominative,
-      type: 'join',
       collection: exercisesSlug,
       on: exerciseFieldConfig.group,
       defaultSort: exerciseFieldConfig.label,

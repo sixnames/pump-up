@@ -6,7 +6,7 @@ import { TOAST_SUCCESS } from '@/lib/constants';
 import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
-import { Exercise, Workout } from '@/payload-types';
+import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
 import { endOfDay, startOfDay } from 'date-fns';
 import { groupBy } from 'lodash';
 
@@ -32,6 +32,58 @@ export const getWorkoutDates = odSafeQuery<string[], void>({
       return startOfDay(item.date);
     });
     return Object.keys(groups);
+  },
+});
+
+export const getWorkoutsDateDescription = odSafeQuery<string, string>({
+  key: 'getWorkoutsDateDescription',
+  action: async ({ user, payload, params }) => {
+    if (!user) {
+      return '';
+    }
+    const workouts = await payload.find({
+      pagination: false,
+      collection: workoutsSlug,
+      depth: 2,
+      where: {
+        and: [
+          {
+            userId: {
+              equals: user.id,
+            },
+          },
+          {
+            date: {
+              less_than: endOfDay(params),
+            },
+          },
+          {
+            date: {
+              greater_than: startOfDay(params),
+            },
+          },
+        ],
+      },
+      select: {
+        exercise: true,
+      },
+    });
+
+    const stringsSet = new Set<string>();
+
+    workouts.docs.forEach((workout) => {
+      const exercise = workout.exercise as Exercise | undefined;
+      if (!exercise) {
+        return;
+      }
+      const group = exercise.group as ExerciseGroup | undefined;
+      if (!group) {
+        return;
+      }
+      stringsSet.add(group.label);
+    });
+
+    return Array.from(stringsSet).join(', ');
   },
 });
 

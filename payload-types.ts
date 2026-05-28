@@ -13,10 +13,7 @@
 export type WorkoutSets = {
   weight?: number | null;
   repetitions?: number | null;
-  /**
-   * Наприклад "1км на хвилину"
-   */
-  speed?: string | null;
+  speed?: number | null;
   minutes?: number | null;
   distance?: number | null;
   incline?: number | null;
@@ -147,7 +144,7 @@ export interface UserAuthOperations {
  */
 export interface ExerciseGroup {
   id: string;
-  label?: string | null;
+  label: string;
   exercises?: {
     docs?: (string | Exercise)[];
     hasNextPage?: boolean;
