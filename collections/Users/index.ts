@@ -26,7 +26,7 @@ export const Users: CollectionConfig = {
   },
   auth: {
     loginWithUsername: true,
-    tokenExpiration: 28800,
+    tokenExpiration: 1000 * 60 * 60 * 24,
   },
   fields: [
     {
