@@ -8,7 +8,7 @@ import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
-import OdSelect from '@/components/forms/OdSelect';
+import NvSelect from '@/components/forms/NvSelect';
 import { Separator } from '@/components/ui/separator';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
@@ -110,7 +110,7 @@ function WorkoutFormFields() {
 
   return (
     <Form className={'pb-16'}>
-      <OdSelect
+      <NvSelect
         name={'group'}
         options={exerciseGroupOptions}
         label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
