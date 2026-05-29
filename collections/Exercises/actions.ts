@@ -7,6 +7,7 @@ import { exercisesSlug } from '@/lib/collectionNames';
 import { alwaysString } from '@/lib/commonUtils';
 import { SORT_ASC_STR } from '@/lib/constants';
 import { odSafeQuery } from '@/lib/safeAction';
+import { Exercise } from '@/payload-types';
 
 interface GetExerciseOptionsParams {
   query?: string | null;
@@ -32,6 +33,16 @@ export const getExerciseOptions = odSafeQuery<QueryComboOption[], GetExerciseOpt
           $eq: params.groupId,
         },
       },
+    });
+  },
+});
+
+export const getExerciseById = odSafeQuery<Exercise, string>({
+  key: 'getExerciseById',
+  action: async ({ payload, params }) => {
+    return await payload.findByID({
+      collection: exercisesSlug,
+      id: params,
     });
   },
 });

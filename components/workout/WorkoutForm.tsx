@@ -1,19 +1,19 @@
 import { getExerciseGroupOptions } from '@/collections/ExerciseGroups/actions';
 import { exerciseFieldOptions } from '@/collections/Exercises';
+import { getExerciseById, getExerciseOptions } from '@/collections/Exercises/actions';
 import { getBestSimilarWorkout } from '@/collections/Workouts/actions';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
 import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
-import FkExercisesCombo from '@/components/formik/FkExercisesCombo';
 import FkInput from '@/components/formik/FkInput';
 import NvSelect from '@/components/forms/NvSelect';
 import { Separator } from '@/components/ui/separator';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, Workout, WorkoutSets } from '@/payload-types';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
@@ -89,7 +89,7 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
 }
 
 function WorkoutFormFields() {
-  const { values } = useFormikContext<Partial<Workout>>();
+  const { values, setFieldValue } = useFormikContext<Partial<Workout>>();
   const [groupId, setGroupId] = useState<string | undefined>();
 
   const exerciseGroupOptionsQuery = useQuery({
@@ -97,11 +97,37 @@ function WorkoutFormFields() {
     queryFn: async () => getExerciseGroupOptions(),
   });
 
+  const exerciseOptionsQuery = useQuery({
+    queryKey: ['exercise-options', groupId],
+    enabled: !!groupId,
+    queryFn: async () =>
+      getExerciseOptions({
+        groupId: groupId as string,
+      }),
+  });
+
+  const getExerciseByIdMutation = useMutation({
+    mutationFn: getExerciseById,
+    onSuccess: async (exercise) => {
+      if (!exercise) {
+        return;
+      }
+      await setFieldValue(workoutFieldConfig.exercise, exercise);
+    },
+  });
+
   if (exerciseGroupOptionsQuery.isLoading) {
     return <OdQueryLoader />;
   }
 
   const exerciseGroupOptions = alwaysArray(exerciseGroupOptionsQuery.data).map((group) => {
+    return {
+      value: alwaysString(group.id),
+      label: alwaysString(group.label),
+    };
+  });
+
+  const exerciseOptions = alwaysArray(exerciseOptionsQuery.data).map((group) => {
     return {
       value: alwaysString(group.id),
       label: alwaysString(group.label),
@@ -119,9 +145,25 @@ function WorkoutFormFields() {
           setGroupId(value?.value);
         }}
       />
-      <FkExercisesCombo groupId={groupId} name={workoutFieldConfig.exercise} />
+      <NvSelect
+        name={workoutFieldConfig.exercise}
+        disabled={!groupId || exerciseOptionsQuery.isLoading}
+        options={exerciseOptions}
+        label={{
+          label: fieldLabels.exercise.singular.nominative,
+          required: true,
+        }}
+        value={groupId}
+        setValue={async (value) => {
+          if (!value) {
+            return;
+          }
+          await getExerciseByIdMutation.mutateAsync(value?.value);
+        }}
+      />
 
       <FkDatePicker hideTimeInputs name={workoutFieldConfig.date} label={{ label: fieldLabels.date.singular }} />
+
       <FkArrayField<Partial<NonNullable<WorkoutSets>[number]>>
         name={workoutFieldConfig.sets}
         title={fieldLabels.sets.plural}
