@@ -12,7 +12,7 @@ import NvSelect from '@/components/forms/NvSelect';
 import { Separator } from '@/components/ui/separator';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { Exercise, Workout, WorkoutSets } from '@/payload-types';
+import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
@@ -88,9 +88,16 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
   );
 }
 
-function WorkoutFormFields() {
+interface WorkoutFormFieldsProps {
+  initialGroupId?: string;
+}
+
+function WorkoutFormFields({ initialGroupId }: WorkoutFormFieldsProps) {
   const { values, setFieldValue } = useFormikContext<Partial<Workout>>();
-  const [groupId, setGroupId] = useState<string | undefined>();
+  const [groupId, setGroupId] = useState<string | undefined>(() => {
+    return initialGroupId;
+  });
+  const exercise = values.exercise as Exercise | undefined;
 
   const exerciseGroupOptionsQuery = useQuery({
     queryKey: ['exercise-group-options'],
@@ -153,7 +160,7 @@ function WorkoutFormFields() {
           label: fieldLabels.exercise.singular.nominative,
           required: true,
         }}
-        value={groupId}
+        value={exercise?.id}
         setValue={async (value) => {
           if (!value) {
             return;
@@ -193,6 +200,9 @@ interface WorkoutFormProps {
 }
 
 export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProps) {
+  const exercise = initialValues.exercise as Exercise | undefined;
+  const group = exercise?.group as ExerciseGroup | undefined;
+
   return (
     <div className={'max-w-140 mx-auto'}>
       <Formik<Partial<Workout>>
@@ -238,7 +248,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         }}
       >
         {() => {
-          return <WorkoutFormFields />;
+          return <WorkoutFormFields initialGroupId={group?.id} />;
         }}
       </Formik>
     </div>

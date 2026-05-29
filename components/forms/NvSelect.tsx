@@ -85,7 +85,7 @@ export default function NvSelect({
               'border-red-600': withError,
             })}
             aria-invalid={withError ? 'true' : 'false'}
-            defaultValue={value || undefined}
+            value={value || undefined}
             disabled={Boolean(disabled)}
             onChange={async (e) => {
               const target = e.target as unknown as HTMLSelectElement;
