@@ -87,9 +87,10 @@ export default function NvSelect({
             aria-invalid={withError ? 'true' : 'false'}
             defaultValue={value || undefined}
             disabled={Boolean(disabled)}
-            onSelect={async (e) => {
+            onChange={async (e) => {
               const target = e.target as unknown as HTMLSelectElement;
               const value = target.value;
+              console.log(value);
               const selectedOption = finalOptions.find((option) => option.value === value);
 
               if (value === emptyOptionValue) {
