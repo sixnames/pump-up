@@ -1,5 +1,5 @@
 import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
-import { Workout, Exercise, WorkoutSets } from '@/payload-types';
+import { Exercise, WorkoutSets } from '@/payload-types';
 
 type SetItem = NonNullable<WorkoutSets>[number];
 
@@ -73,10 +73,9 @@ export const workoutMetrics: Metric[] = [
   },
 ];
 
-export function getWorkoutMetricValues(workout: Workout) {
-  const exercise = workout.exercise as Exercise;
+export function getWorkoutMetricValues(exercise: Exercise, setsList: WorkoutSets) {
   const exerciseFields = alwaysArray(exercise.fields);
-  const sets = alwaysArray(workout.sets);
+  const sets = alwaysArray(setsList);
 
   return workoutMetrics
     .filter((metric) => {

@@ -1,6 +1,6 @@
 import { getExerciseGroupOptions } from '@/collections/ExerciseGroups/actions';
 import { exerciseFieldOptions } from '@/collections/Exercises';
-import { getLastSimilarWorkout } from '@/collections/Workouts/actions';
+import { getBestSimilarWorkout } from '@/collections/Workouts/actions';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
@@ -19,27 +19,85 @@ import set from 'lodash/set';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
 
-function WorkoutFormFields() {
+interface WorkoutSetFieldsProps {
+  setIndex: number;
+  remove: () => void;
+  fieldName: string;
+}
+
+function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps) {
   const { values } = useFormikContext<Partial<Workout>>();
   const exercise = values.exercise as Exercise | undefined;
+  const getLastSimilarWorkoutQuery = useQuery({
+    queryKey: ['last-similar-workout', exercise?.id, setIndex],
+    enabled: !!exercise,
+    queryFn: async () =>
+      getBestSimilarWorkout({
+        exerciseId: exercise?.id as string,
+        setIndex,
+      }),
+  });
+
+  if (!exercise) {
+    return null;
+  }
+
+  if (getLastSimilarWorkoutQuery.isLoading) {
+    return <OdQueryLoader />;
+  }
+
   const fields = alwaysArray(exercise?.fields);
 
+  return (
+    <div>
+      <Separator className={'mb-5'} />
+      <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${setIndex + 1}`}</div>
+      {fields.map((field, index) => {
+        const option = exerciseFieldOptions.find((option) => {
+          return field === option.value;
+        });
+
+        if (!option) {
+          return null;
+        }
+
+        const prevValue = getLastSimilarWorkoutQuery?.data?.[field];
+
+        return (
+          <div className={'mb-6'} key={field}>
+            <FkInput
+              className={'mb-0'}
+              delay={0}
+              name={`${fieldName}.${field}`}
+              label={{ label: fieldLabels[field]?.singular, description: option.description }}
+              type={option?.type}
+              removeProps={
+                index === 0
+                  ? {
+                      remove,
+                      skipConfirm: true,
+                    }
+                  : undefined
+              }
+            />
+            {prevValue ? <div className={' mt-2'}>{`Кращій результат: ${prevValue}`}</div> : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function WorkoutFormFields() {
+  const { values } = useFormikContext<Partial<Workout>>();
   const [groupId, setGroupId] = useState<string | undefined>();
-  const getLastSimilarWorkoutQuery = useQuery({
-    queryKey: ['last-similar-workout', exercise?.id],
-    enabled: !!exercise,
-    queryFn: async () => getLastSimilarWorkout(alwaysString(exercise?.id)),
-  });
+
   const exerciseGroupOptionsQuery = useQuery({
     queryKey: ['exercise-group-options'],
     queryFn: async () => getExerciseGroupOptions(),
   });
 
   if (exerciseGroupOptionsQuery.isLoading) {
-    return <OdQueryLoader />;
-  }
-
-  if (getLastSimilarWorkoutQuery.isLoading) {
     return <OdQueryLoader />;
   }
 
@@ -50,10 +108,8 @@ function WorkoutFormFields() {
     };
   });
 
-  const lastSimilarWorkoutSets = alwaysArray(getLastSimilarWorkoutQuery.data?.sets);
-
   return (
-    <Form>
+    <Form className={'pb-16'}>
       <OdSelect
         name={'group'}
         options={exerciseGroupOptions}
@@ -78,46 +134,7 @@ function WorkoutFormFields() {
           },
         }}
         renderItem={({ fieldName, index, remove }) => {
-          const prevSet = lastSimilarWorkoutSets[index];
-
-          return (
-            <div>
-              <Separator className={'mb-5'} />
-              <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${index + 1}`}</div>
-              {fields.map((field, index) => {
-                const option = exerciseFieldOptions.find((option) => {
-                  return field === option.value;
-                });
-
-                if (!option) {
-                  return null;
-                }
-
-                const prevValue = prevSet?.[field];
-
-                return (
-                  <div className={'mb-6'} key={field}>
-                    <FkInput
-                      className={'mb-0'}
-                      delay={0}
-                      name={`${fieldName}.${field}`}
-                      label={{ label: fieldLabels[field]?.singular, description: option.description }}
-                      type={option?.type}
-                      removeProps={
-                        index === 0
-                          ? {
-                              remove,
-                              skipConfirm: true,
-                            }
-                          : undefined
-                      }
-                    />
-                    {prevValue ? <div className={' mt-2'}>{`Минулого разу: ${prevValue}`}</div> : null}
-                  </div>
-                );
-              })}
-            </div>
-          );
+          return <WorkoutSetFields setIndex={index} remove={remove} fieldName={fieldName} />;
         }}
       />
 

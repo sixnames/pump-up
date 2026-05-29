@@ -1,14 +1,15 @@
 'use server';
 
+import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
 import { workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
 import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
-import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
+import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
 import { endOfDay, startOfDay } from 'date-fns';
-import { groupBy } from 'lodash';
+import { groupBy, orderBy, sumBy } from 'lodash';
 
 export const getWorkoutDates = odSafeQuery<string[], void>({
   key: 'getWorkoutDates',
@@ -156,8 +157,17 @@ export const getWorkoutById = odSafeQuery<Workout | null, string>({
   },
 });
 
-export const getLastSimilarWorkout = odSafeQuery<Workout | null, string>({
-  key: 'getLastSimilarWorkout',
+export type WorkoutSet = NonNullable<WorkoutSets>[number] & {
+  rating: number;
+};
+
+export interface GetBestSimilarWorkoutParams {
+  exerciseId: string;
+  setIndex: number;
+}
+
+export const getBestSimilarWorkout = odSafeQuery<WorkoutSet | null, GetBestSimilarWorkoutParams>({
+  key: 'getBestSimilarWorkout',
   action: async ({ params, user, payload }) => {
     if (!user) {
       return null;
@@ -165,17 +175,48 @@ export const getLastSimilarWorkout = odSafeQuery<Workout | null, string>({
 
     const data = await payload.find({
       collection: workoutsSlug,
-      limit: 1,
       where: {
         userId: {
           equals: user.id,
         },
         exercise: {
-          equals: params,
+          equals: params.exerciseId,
         },
       },
     });
-    return data.docs[0];
+
+    const firstWorkout = data.docs[0];
+    if (!firstWorkout) {
+      return null;
+    }
+
+    const exercise = firstWorkout.exercise as Exercise;
+    if (!exercise) {
+      return null;
+    }
+
+    const allSets = orderBy(
+      data.docs.reduce((acc: WorkoutSet[], workout) => {
+        const currentSet = alwaysArray(workout.sets)[params.setIndex];
+        if (!currentSet) {
+          return acc;
+        }
+
+        const metrics = getWorkoutMetricValues(exercise, [currentSet]);
+        const rating = sumBy(metrics, (metric) => alwaysNumber(metric.value));
+        return [
+          ...acc,
+          {
+            ...currentSet,
+            rating,
+          },
+        ];
+      }, []),
+      ['rating'],
+      ['desc'],
+    );
+
+    return allSets[0] || null;
   },
 });
 
