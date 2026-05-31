@@ -3,6 +3,7 @@
 import { createWorkout } from '@/collections/Workouts/actions';
 import WorkoutForm from '@/components/workout/WorkoutForm';
 import { useOdMutation } from '@/hooks/useOdMutation';
+import { startOfDay } from 'date-fns';
 
 export default function CreateWorkoutPage() {
   const createWorkoutMutation = useOdMutation({
@@ -13,7 +14,7 @@ export default function CreateWorkoutPage() {
   });
   return (
     <WorkoutForm
-      initialValues={{ date: new Date().toISOString() }}
+      initialValues={{ date: startOfDay(new Date()).toISOString() }}
       onSubmit={async (values) => {
         await createWorkoutMutation.mutateAsync(values);
       }}

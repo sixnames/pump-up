@@ -148,7 +148,8 @@ export interface Day {
   id: string;
   userId: string;
   date: string;
-  exerciseGroups: (string | ExerciseGroup)[];
+  exerciseGroups?: (string | ExerciseGroup)[] | null;
+  workouts?: (string | Workout)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -340,6 +341,7 @@ export interface DaysSelect<T extends boolean = true> {
   userId?: T;
   date?: T;
   exerciseGroups?: T;
+  workouts?: T;
   updatedAt?: T;
   createdAt?: T;
 }

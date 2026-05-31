@@ -206,6 +206,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
   return (
     <div className={'max-w-140 mx-auto'}>
       <Formik<Partial<Workout>>
+        validateOnChange
         initialValues={initialValues}
         onSubmit={async (values) => {
           await onSubmit(values);

@@ -1,5 +1,5 @@
 import { dayFieldConfig } from '@/collections/Days/fieldConfig';
-import { daysSlug, exerciseGroupsSlug } from '@/lib/collectionNames';
+import { daysSlug, exerciseGroupsSlug, workoutsSlug } from '@/lib/collectionNames';
 import { fieldLabels } from '@/lib/fieldLabels';
 import type { CollectionConfig } from 'payload';
 
@@ -16,6 +16,7 @@ export const Days: CollectionConfig = {
       type: 'text',
       name: dayFieldConfig.userId,
       required: true,
+      index: true,
     },
     {
       name: dayFieldConfig.date,
@@ -29,8 +30,13 @@ export const Days: CollectionConfig = {
       name: dayFieldConfig.exerciseGroups,
       label: fieldLabels.exerciseGroup.plural.nominative,
       relationTo: exerciseGroupsSlug,
-      maxDepth: 0,
-      required: true,
+      hasMany: true,
+    },
+    {
+      type: 'relationship',
+      name: dayFieldConfig.workouts,
+      label: fieldLabels.workout.singular,
+      relationTo: workoutsSlug,
       hasMany: true,
     },
   ],
