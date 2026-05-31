@@ -2,6 +2,7 @@
 
 import Logo from '@/components/common/Logo';
 import NavIcon from '@/components/common/NavIcon';
+import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext';
 import { Separator } from '@/components/ui/separator';
 import {
   Sidebar,
@@ -30,6 +31,10 @@ interface AppSidebarGroupProps {
 
 function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
   const pathname = usePathname();
+  const { user } = useGlobalConfigContext();
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarGroup>
@@ -40,6 +45,11 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
             if (item.hidden) {
               return null;
             }
+
+            if (item.url === '/migrate' && !user.isAdmin) {
+              return null;
+            }
+
             const navItem = item as UrlConfigItem;
             const cleanHref = extractUrlString(navItem.url);
             const isActive = pathname.startsWith(cleanHref);

@@ -38,6 +38,8 @@ export type UrlConfig = {
     links: {
       createWorkout: UrlConfigItem;
       updateWorkout: UrlConfigItem;
+      calendar: UrlConfigItem;
+      migrate: UrlConfigItem;
     };
   };
   console: {
@@ -59,6 +61,7 @@ export const urlConfig: UrlConfig = {
         title: getUserActionTitle(fieldLabels.workout.singular).create,
         testId: `${navLikTestIdPrefix}-create-workout`,
         icon: 'plus',
+        hidden: true,
       },
       updateWorkout: {
         url: '/update-workout',
@@ -66,6 +69,18 @@ export const urlConfig: UrlConfig = {
         testId: `${navLikTestIdPrefix}-update-workout`,
         icon: 'plus',
         hidden: true,
+      },
+      calendar: {
+        url: '/calendar',
+        title: fieldLabels.calendar.singular,
+        testId: `${navLikTestIdPrefix}-calendar`,
+        icon: 'calendar',
+      },
+      migrate: {
+        url: '/migrate',
+        title: 'Migrate',
+        testId: `${navLikTestIdPrefix}-migrate`,
+        icon: 'network',
       },
     },
   },
