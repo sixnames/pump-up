@@ -4,11 +4,10 @@ import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
 import { workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
-import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
+import { alwaysDate, getAppDateKey, getAppDayRange, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
-import { endOfDay, startOfDay } from 'date-fns';
 import { groupBy, orderBy, sumBy } from 'lodash';
 
 export const getWorkoutDates = odSafeQuery<string[], void>({
@@ -30,7 +29,7 @@ export const getWorkoutDates = odSafeQuery<string[], void>({
       },
     });
     const groups = groupBy(workouts.docs, (item) => {
-      return startOfDay(item.date);
+      return getAppDateKey(item.date);
     });
     return Object.keys(groups);
   },
@@ -40,6 +39,10 @@ export const getWorkoutsDateDescription = odSafeQuery<string, string>({
   key: 'getWorkoutsDateDescription',
   action: async ({ user, payload, params }) => {
     if (!user) {
+      return '';
+    }
+    const dateRange = getAppDayRange(params);
+    if (!dateRange) {
       return '';
     }
     const workouts = await payload.find({
@@ -55,12 +58,12 @@ export const getWorkoutsDateDescription = odSafeQuery<string, string>({
           },
           {
             date: {
-              less_than: endOfDay(params),
+              less_than: dateRange.end,
             },
           },
           {
             date: {
-              greater_than: startOfDay(params),
+              greater_than_equal: dateRange.start,
             },
           },
         ],
@@ -94,6 +97,10 @@ export const getWorkoutsOnDate = odSafeQuery<Workout[], string>({
     if (!user) {
       return [];
     }
+    const dateRange = getAppDayRange(params);
+    if (!dateRange) {
+      return [];
+    }
     const workouts = await payload.find({
       pagination: false,
       collection: workoutsSlug,
@@ -106,12 +113,12 @@ export const getWorkoutsOnDate = odSafeQuery<Workout[], string>({
           },
           {
             date: {
-              less_than: endOfDay(params),
+              less_than: dateRange.end,
             },
           },
           {
             date: {
-              greater_than: startOfDay(params),
+              greater_than_equal: dateRange.start,
             },
           },
         ],

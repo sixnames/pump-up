@@ -2,10 +2,102 @@ import { DeclensionEnum } from '@/@types/enums';
 import { alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { MONTH_WORDS, WEEK_DAYS } from '@/lib/constants';
 import addZero from 'add-zero';
-import { getDay, isSameDay, startOfDay, startOfMonth, startOfToday } from 'date-fns';
+
+export const APP_TIME_ZONE = 'Europe/Kyiv';
+
+type AppDateParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+};
+
+const appDateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: APP_TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+  hourCycle: 'h23',
+});
+
+function getAppDateParts(date: Date): AppDateParts {
+  const parts = appDateTimeFormatter.formatToParts(date).reduce<Record<string, string>>((acc, part) => {
+    acc[part.type] = part.value;
+    return acc;
+  }, {});
+
+  return {
+    year: alwaysNumber(parts.year),
+    month: alwaysNumber(parts.month),
+    day: alwaysNumber(parts.day),
+    hour: alwaysNumber(parts.hour),
+    minute: alwaysNumber(parts.minute),
+    second: alwaysNumber(parts.second),
+  };
+}
+
+function getTimeZoneOffset(date: Date) {
+  const parts = getAppDateParts(date);
+  const utcDate = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+  return utcDate - date.getTime();
+}
+
+function appDateToUtc(year: number, monthIndex: number, day: number, hour = 0, minute = 0, second = 0) {
+  const utcDate = Date.UTC(year, monthIndex, day, hour, minute, second);
+  const firstPassDate = new Date(utcDate - getTimeZoneOffset(new Date(utcDate)));
+  return new Date(utcDate - getTimeZoneOffset(firstPassDate));
+}
+
+export function getAppDateKey(date?: Date | string | null) {
+  const eventDate = safeDate(date);
+  if (!eventDate) {
+    return '';
+  }
+  const { year, month, day } = getAppDateParts(eventDate);
+  return `${year}-${addZero(month)}-${addZero(day)}`;
+}
+
+export function getAppStartOfDay(date?: Date | string | null) {
+  const eventDate = safeDate(date);
+  if (!eventDate) {
+    return undefined;
+  }
+  const { year, month, day } = getAppDateParts(eventDate);
+  return appDateToUtc(year, month - 1, day);
+}
+
+export function getAppDayRange(date?: Date | string | null) {
+  const eventDate = safeDate(date);
+  if (!eventDate) {
+    return undefined;
+  }
+  const { year, month, day } = getAppDateParts(eventDate);
+
+  return {
+    start: appDateToUtc(year, month - 1, day),
+    end: appDateToUtc(year, month - 1, day + 1),
+  };
+}
+
+function getAppWeekDayIndex(date: Date) {
+  const weekDay = new Intl.DateTimeFormat('en-US', {
+    timeZone: APP_TIME_ZONE,
+    weekday: 'short',
+  }).format(date);
+
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekDay);
+}
 
 export function getToday() {
-  return process.env.NODE_ENV === 'development' ? startOfDay(new Date(2023, 1, 20)) : startOfToday();
+  return process.env.NODE_ENV === 'development'
+    ? appDateToUtc(2023, 1, 20)
+    : alwaysDate(getAppStartOfDay(new Date()));
 }
 
 export type GetReadableDateMonthVariant = 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined;
@@ -76,19 +168,21 @@ export function getReadableDate({
     return getReadableDateEmptyPayload;
   }
 
-  const monthStart = startOfMonth(eventDate);
-  const weekDayIndex = getDay(eventDate);
+  const appDateParts = getAppDateParts(eventDate);
+  const weekDayIndex = getAppWeekDayIndex(eventDate);
   const weekDay = WEEK_DAYS[weekDayIndex];
 
-  const dateDay = eventDate.getDate();
-  const dateMonth = eventDate.getMonth() + 1;
-  const dateYear = eventDate.getFullYear();
-  const dateHour = eventDate.getHours();
-  const dateMinutes = eventDate.getMinutes();
-  const dateMonthWordNominative = MONTH_WORDS[eventDate.getMonth()]?.nominative;
-  const dateMonthWord = MONTH_WORDS[eventDate.getMonth()]?.genitive;
+  const dateDay = appDateParts.day;
+  const dateMonth = appDateParts.month;
+  const dateYear = appDateParts.year;
+  const dateHour = appDateParts.hour;
+  const dateMinutes = appDateParts.minute;
+  const monthStart = appDateToUtc(dateYear, dateMonth - 1, 1);
+  const dateMonthWordNominative = MONTH_WORDS[dateMonth - 1]?.nominative;
+  const dateMonthWord = MONTH_WORDS[dateMonth - 1]?.genitive;
 
   const initialReadableDate = eventDate.toLocaleDateString('uk-UA', {
+    timeZone: APP_TIME_ZONE,
     year,
     month,
     day,
@@ -126,7 +220,7 @@ export function getReadableDate({
     dateMonthWordNominative,
     weekDay,
     fileNameDate: `${dateYearString}-${dateMonthString}-${dateDayString}`,
-    isToday: isSameDay(eventDate, getToday()),
+    isToday: getAppDateKey(eventDate) === getAppDateKey(getToday()),
   };
 }
 
