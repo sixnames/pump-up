@@ -532,18 +532,18 @@ export const fieldLabels = {
   // days
   day: {
     singular: {
-      nominative: 'Доба',
-      genitive: 'Доби',
-      dative: 'Добі',
-      accusative: 'Добу',
-      ablative: 'Добою',
+      nominative: 'День',
+      genitive: 'Дня',
+      dative: 'Дню',
+      accusative: 'День',
+      ablative: 'Днем',
     },
     plural: {
-      nominative: 'Доби',
-      genitive: 'Діб',
-      dative: 'Добам',
-      accusative: 'Доби',
-      ablative: 'Добами',
+      nominative: 'Дні',
+      genitive: 'Днів',
+      dative: 'Дням',
+      accusative: 'Дні',
+      ablative: 'Днями',
     },
   },
   dayEvent: {

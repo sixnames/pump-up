@@ -80,6 +80,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    days: Day;
     'exercise-groups': ExerciseGroup;
     exercises: Exercise;
     workouts: Workout;
@@ -96,6 +97,7 @@ export interface Config {
     };
   };
   collectionsSelect: {
+    days: DaysSelect<false> | DaysSelect<true>;
     'exercise-groups': ExerciseGroupsSelect<false> | ExerciseGroupsSelect<true>;
     exercises: ExercisesSelect<false> | ExercisesSelect<true>;
     workouts: WorkoutsSelect<false> | WorkoutsSelect<true>;
@@ -137,6 +139,18 @@ export interface UserAuthOperations {
   unlock: {
     username: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "days".
+ */
+export interface Day {
+  id: string;
+  userId: string;
+  date: string;
+  exerciseGroups: (string | ExerciseGroup)[];
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -253,6 +267,10 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'days';
+        value: string | Day;
+      } | null)
+    | ({
         relationTo: 'exercise-groups';
         value: string | ExerciseGroup;
       } | null)
@@ -313,6 +331,17 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "days_select".
+ */
+export interface DaysSelect<T extends boolean = true> {
+  userId?: T;
+  date?: T;
+  exerciseGroups?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

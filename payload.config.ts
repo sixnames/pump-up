@@ -1,3 +1,4 @@
+import { Days } from '@/collections/Days';
 import { ExerciseGroups } from '@/collections/ExerciseGroups';
 import { Exercises } from '@/collections/Exercises';
 import { Roles } from '@/collections/Roles';
@@ -36,7 +37,7 @@ export default buildConfig({
         : false,
   },
   globals: [],
-  collections: [ExerciseGroups, Exercises, Workouts, Roles, Users],
+  collections: [Days, ExerciseGroups, Exercises, Workouts, Roles, Users],
 
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

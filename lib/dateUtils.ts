@@ -95,9 +95,7 @@ function getAppWeekDayIndex(date: Date) {
 }
 
 export function getToday() {
-  return process.env.NODE_ENV === 'development'
-    ? appDateToUtc(2023, 1, 20)
-    : alwaysDate(getAppStartOfDay(new Date()));
+  return alwaysDate(getAppStartOfDay(new Date()));
 }
 
 export type GetReadableDateMonthVariant = 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined;
