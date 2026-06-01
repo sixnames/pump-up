@@ -1,5 +1,6 @@
 import OdTitle from '@/components/common/OdTitle';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
+import WorkoutsPage from '@/components/WorkoutsPage';
 import { urlConfig } from '@/lib/urlUtils';
 import type { Metadata } from 'next';
 
@@ -19,6 +20,7 @@ export default async function Page() {
       <OdTitle testId={'calendar-page'} breadcrumbs={[pageConfig]}>
         {title}
       </OdTitle>
+      <WorkoutsPage />
     </ProtectedRoute>
   );
 }

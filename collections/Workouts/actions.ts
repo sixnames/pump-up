@@ -1,89 +1,36 @@
 'use server';
 
 import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
-import { workoutsSlug } from '@/lib/collectionNames';
+import { exerciseGroupsSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
-import { alwaysDate, getAppDateKey, getAppDayRange, getReadableDate } from '@/lib/dateUtils';
+import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
-import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
+import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { groupBy, orderBy, sumBy } from 'lodash';
 
-export const getWorkoutDates = odSafeQuery<string[], void>({
-  key: 'getWorkoutDates',
-  action: async ({ user, payload }) => {
-    if (!user) {
-      return [];
-    }
-    const workouts = await payload.find({
-      pagination: false,
-      collection: workoutsSlug,
-      where: {
-        userId: {
-          equals: user.id,
-        },
-      },
-      select: {
-        date: true,
-      },
-    });
-    const groups = groupBy(workouts.docs, (item) => {
-      return getAppDateKey(item.date);
-    });
-    return Object.keys(groups);
-  },
-});
-
-export const getWorkoutsDateDescription = odSafeQuery<string, string>({
+export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
   key: 'getWorkoutsDateDescription',
   action: async ({ user, payload, params }) => {
     if (!user) {
       return '';
     }
-    const dateRange = getAppDayRange(params);
-    if (!dateRange) {
-      return '';
-    }
-    const workouts = await payload.find({
+
+    const groups = await payload.find({
       pagination: false,
-      collection: workoutsSlug,
+      collection: exerciseGroupsSlug,
       depth: 2,
       where: {
-        and: [
-          {
-            userId: {
-              equals: user.id,
-            },
-          },
-          {
-            date: {
-              less_than: dateRange.end,
-            },
-          },
-          {
-            date: {
-              greater_than_equal: dateRange.start,
-            },
-          },
-        ],
-      },
-      select: {
-        exercise: true,
+        id: {
+          in: params,
+        },
       },
     });
 
     const stringsSet = new Set<string>();
 
-    workouts.docs.forEach((workout) => {
-      const exercise = workout.exercise as Exercise | undefined;
-      if (!exercise) {
-        return;
-      }
-      const group = exercise.group as ExerciseGroup | undefined;
-      if (!group) {
-        return;
-      }
+    groups.docs.forEach((group) => {
       stringsSet.add(group.label);
     });
 
@@ -91,37 +38,19 @@ export const getWorkoutsDateDescription = odSafeQuery<string, string>({
   },
 });
 
-export const getWorkoutsOnDate = odSafeQuery<Workout[], string>({
+export const getWorkoutsOnDate = odSafeQuery<Workout[], string[]>({
   key: 'getWorkoutsOnDate',
   action: async ({ user, payload, params }) => {
     if (!user) {
-      return [];
-    }
-    const dateRange = getAppDayRange(params);
-    if (!dateRange) {
       return [];
     }
     const workouts = await payload.find({
       pagination: false,
       collection: workoutsSlug,
       where: {
-        and: [
-          {
-            userId: {
-              equals: user.id,
-            },
-          },
-          {
-            date: {
-              less_than: dateRange.end,
-            },
-          },
-          {
-            date: {
-              greater_than_equal: dateRange.start,
-            },
-          },
-        ],
+        id: {
+          in: params,
+        },
       },
     });
     return alwaysArray(workouts.docs);
