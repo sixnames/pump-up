@@ -29,8 +29,9 @@ function WorkoutsDateContent({ day }: WorkoutsDateContentProps) {
   const { user } = useGlobalConfigContext();
   const workoutIds = alwaysArray(day.workouts) as string[];
   const getWorkoutsOnDateQuery = useQuery({
-    queryKey: ['getWorkoutsList', user?.id, day.id],
+    queryKey: ['getWorkoutsList', user?.id, workoutIds],
     queryFn: () => getWorkoutsOnDate(workoutIds),
+    enabled: workoutIds.length > 0,
   });
   const router = useRouter();
   const { start } = useProgress();

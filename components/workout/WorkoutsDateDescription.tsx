@@ -13,6 +13,7 @@ export default function WorkoutsDateDescription({ groupIds }: WorkoutsDateDescri
   const getWorkoutsDateDescriptionQuery = useQuery({
     queryKey: ['getWorkoutsDateDescription', user?.id, groupIds],
     queryFn: () => getWorkoutsDateDescription(groupIds),
+    enabled: groupIds.length > 0,
   });
 
   if (getWorkoutsDateDescriptionQuery.isLoading) {
