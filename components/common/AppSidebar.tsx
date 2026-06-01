@@ -63,7 +63,9 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
                   isActive={isActive}
                   tooltip={navItem.title}
                   onClick={() => {
-                    sidebarContext.toggleSidebar();
+                    if (sidebarContext.isMobile) {
+                      sidebarContext.toggleSidebar();
+                    }
                   }}
                 >
                   <Link href={navItem.url} tabIndex={-1}>
@@ -103,8 +105,10 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem
             onClick={() => {
-              start();
-              sidebarContext.toggleSidebar();
+              if (sidebarContext.isMobile) {
+                start();
+                sidebarContext.toggleSidebar();
+              }
             }}
           >
             <button

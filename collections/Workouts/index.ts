@@ -3,7 +3,6 @@ import { daysSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
-import { startOfDay } from 'date-fns';
 import type { CollectionConfig, NumberField, TextField } from 'payload';
 
 export const setFields: (NumberField | TextField)[] = [
@@ -54,7 +53,6 @@ export const Workouts: CollectionConfig = {
       async ({ req, doc }) => {
         const payload = req.payload;
         const workout = doc as Workout;
-        const date = startOfDay(workout.date).toISOString();
         const exercise = workout.exercise as Exercise;
         const exerciseGroup = exercise.group as ExerciseGroup;
 
@@ -67,7 +65,7 @@ export const Workouts: CollectionConfig = {
               equals: workout.userId,
             },
             date: {
-              equals: date,
+              equals: workout.date,
             },
           },
         });
@@ -79,7 +77,7 @@ export const Workouts: CollectionConfig = {
             depth: 0,
             data: {
               userId: workout.userId,
-              date,
+              date: workout.date,
               exerciseGroups: [],
               workouts: [],
             },
@@ -109,7 +107,7 @@ export const Workouts: CollectionConfig = {
           collection: workoutsSlug,
           id,
         });
-        const date = startOfDay(workout.date).toISOString();
+        const date = workout.date;
 
         const days = await payload.find({
           collection: daysSlug,
