@@ -18,7 +18,6 @@ export default function WorkoutsPage() {
   const getUserDaysQuery = useQuery({
     queryKey: ['getUserDays', user?.id],
     queryFn: () => getUserDays(),
-    networkMode: 'always',
   });
 
   return (

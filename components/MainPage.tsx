@@ -17,7 +17,6 @@ export default function MainPage() {
   const dayQuery = useQuery({
     queryKey: ['day', getToday().toISOString()],
     queryFn: async () => getTodayDay(),
-    networkMode: 'always',
   });
 
   if (dayQuery.isLoading) {

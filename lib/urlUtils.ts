@@ -81,6 +81,7 @@ export const urlConfig: UrlConfig = {
         title: 'Migrate',
         testId: `${navLikTestIdPrefix}-migrate`,
         icon: 'network',
+        hidden: true,
       },
     },
   },

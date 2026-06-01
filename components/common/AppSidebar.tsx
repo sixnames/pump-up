@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sidebar';
 import { extractUrlString, UrlConfig, urlConfig, UrlConfigItem } from '@/lib/urlUtils';
 import { cn } from '@/lib/utils';
+import { useProgress } from '@bprogress/next';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
@@ -31,6 +32,7 @@ interface AppSidebarGroupProps {
 
 function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
   const pathname = usePathname();
+  const sidebarContext = useSidebar();
   const { user } = useGlobalConfigContext();
   if (!user) {
     return null;
@@ -56,7 +58,14 @@ function AppSidebarGroup({ navItems, label }: AppSidebarGroupProps) {
 
             return (
               <SidebarMenuItem key={key}>
-                <SidebarMenuButton asChild isActive={isActive} tooltip={navItem.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={navItem.title}
+                  onClick={() => {
+                    sidebarContext.toggleSidebar();
+                  }}
+                >
                   <Link href={navItem.url} tabIndex={-1}>
                     {item.icon ? <NavIcon icon={item.icon} /> : null}
                     <span>{navItem.title}</span>
@@ -80,6 +89,7 @@ function DevLabel() {
 }
 
 export function AppSidebar() {
+  const { start } = useProgress();
   const router = useRouter();
   const sidebarContext = useSidebar();
   const collapsed = sidebarContext.state === 'collapsed';
@@ -91,7 +101,12 @@ export function AppSidebar() {
           <SidebarTrigger tabIndex={-1} className={'cursor-pointer'} />
         </div>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem
+            onClick={() => {
+              start();
+              sidebarContext.toggleSidebar();
+            }}
+          >
             <button
               className={cn('cursor-pointer flex gap-2 pl-0.5 mb-3 items-center')}
               onClick={() => router.push('/')}
