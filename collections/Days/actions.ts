@@ -15,6 +15,7 @@ export const getTodayDay = odSafeQuery<Day | null, void>({
     const days = await payload.find({
       collection: daysSlug,
       pagination: false,
+      depth: 0,
       where: {
         date: {
           equals: getToday().toISOString(),

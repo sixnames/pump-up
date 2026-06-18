@@ -1,6 +1,6 @@
 'use server';
 
-import { exerciseGroupsSlug, workoutsSlug } from '@/lib/collectionNames';
+import { exerciseGroupsSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
 import { alwaysDate, getAppStartOfDay, getReadableDate } from '@/lib/dateUtils';
@@ -20,11 +20,14 @@ export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
     const groups = await payload.find({
       pagination: false,
       collection: exerciseGroupsSlug,
-      depth: 2,
+      depth: 0,
       where: {
         id: {
           in: params,
         },
+      },
+      select: {
+        label: true,
       },
     });
 
@@ -35,6 +38,95 @@ export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
     });
 
     return Array.from(stringsSet).join(', ');
+  },
+});
+
+interface GetWorkoutSuggestionsParams {
+  groupIds: string[];
+  addedExerciseIds: string[];
+}
+
+export const getWorkoutSuggestions = odSafeQuery<string[], GetWorkoutSuggestionsParams>({
+  key: 'getWorkoutSuggestions',
+  action: async ({ user, payload, params }) => {
+    if (!user) {
+      return [];
+    }
+
+    if (params.addedExerciseIds.length < 1) {
+      return [];
+    }
+
+    const exercises = await payload.find({
+      pagination: false,
+      collection: exercisesSlug,
+      depth: 0,
+      where: {
+        group: {
+          in: params.groupIds,
+        },
+      },
+      select: {
+        label: false,
+        group: false,
+        fields: false,
+        createdAt: false,
+        updatedAt: false,
+      },
+    });
+    const exerciseIds = exercises.docs.map(({ id }) => id);
+
+    const workoutsCollection = payload.db.collections[workoutsSlug];
+    const doneWorkouts = await workoutsCollection.aggregate<{ exerciseId: string }>([
+      {
+        $match: {
+          userId: user.id,
+        },
+      },
+      {
+        $set: {
+          exerciseId: {
+            $toString: '$exercise',
+          },
+        },
+      },
+      {
+        $match: {
+          exerciseId: {
+            $in: exerciseIds,
+            $nin: params.addedExerciseIds,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$exerciseId',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          exerciseId: '$_id',
+        },
+      },
+    ]);
+
+    const ids = doneWorkouts.map((item) => item.exerciseId);
+    const suggestions = await payload.find({
+      pagination: false,
+      collection: exercisesSlug,
+      depth: 0,
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      select: {
+        label: true,
+      },
+    });
+
+    return suggestions.docs.map(({ label }) => alwaysString(label)).filter(Boolean);
   },
 });
 

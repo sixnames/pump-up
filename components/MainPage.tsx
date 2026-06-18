@@ -36,7 +36,7 @@ export default function MainPage() {
           {urlConfig.app.links.createWorkout.title}
         </OdButton>
       </div>
-      {day ? <WorkoutsDate day={day} isOpen /> : null}
+      {day ? <WorkoutsDate day={day} isOpen enableSuggestions /> : null}
     </div>
   );
 }

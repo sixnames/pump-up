@@ -49,7 +49,7 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
   const fields = alwaysArray(exercise?.fields);
 
   return (
-    <Card className={'mb-6 bg-nested-card'}>
+    <Card className={'mb-6'}>
       <CardHeader>
         <CardTitle className={'text-success'}>{`${fieldLabels.sets.singular} ${setIndex + 1}`}</CardTitle>
       </CardHeader>

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
 import WorkoutsDateDescription from '@/components/workout/WorkoutsDateDescription';
+import WorkoutsDateSuggestions from '@/components/workout/WorkoutsDateSuggestions';
 import { useOdMutation } from '@/hooks/useOdMutation';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { getReadableDate } from '@/lib/dateUtils';
@@ -23,10 +24,12 @@ import React from 'react';
 
 interface WorkoutsDateContentProps {
   day: Day;
+  enableSuggestions?: boolean;
 }
 
-function WorkoutsDateContent({ day }: WorkoutsDateContentProps) {
+function WorkoutsDateContent({ day, enableSuggestions }: WorkoutsDateContentProps) {
   const { user } = useGlobalConfigContext();
+  const groupIds = alwaysArray(day.exerciseGroups) as string[];
   const workoutIds = alwaysArray(day.workouts) as string[];
   const getWorkoutsOnDateQuery = useQuery({
     queryKey: ['getWorkoutsList', user?.id, workoutIds],
@@ -48,9 +51,21 @@ function WorkoutsDateContent({ day }: WorkoutsDateContentProps) {
     return <OdQueryLoader />;
   }
 
+  const workouts = alwaysArray(getWorkoutsOnDateQuery.data);
+  const addedExerciseIds = workouts.map((workout) => {
+    const exercise = workout.exercise as Exercise;
+    return alwaysString(exercise.id);
+  });
+
   return (
     <CardContent className={'space-y-4'}>
-      {alwaysArray(getWorkoutsOnDateQuery.data).map((workout, workoutIndex) => {
+      <WorkoutsDateSuggestions
+        groupIds={groupIds}
+        enableSuggestions={enableSuggestions}
+        addedExerciseIds={addedExerciseIds}
+      />
+
+      {workouts.map((workout, workoutIndex) => {
         const exercise = workout.exercise as Exercise;
         const fields = alwaysArray(exercise?.fields);
         const group = exercise.group as ExerciseGroup | undefined;
@@ -132,9 +147,10 @@ function WorkoutsDateContent({ day }: WorkoutsDateContentProps) {
 interface WorkoutsDateProps {
   day: Day;
   isOpen: boolean;
+  enableSuggestions?: boolean;
 }
 
-export default function WorkoutsDate({ day, isOpen }: WorkoutsDateProps) {
+export default function WorkoutsDate({ day, isOpen, enableSuggestions }: WorkoutsDateProps) {
   const groupIds = alwaysArray(day.exerciseGroups) as string[];
 
   return (
@@ -151,7 +167,7 @@ export default function WorkoutsDate({ day, isOpen }: WorkoutsDateProps) {
           </CardTitle>
         </CardHeader>
         <CollapsibleContent>
-          <WorkoutsDateContent day={day} />
+          <WorkoutsDateContent day={day} enableSuggestions={enableSuggestions} />
         </CollapsibleContent>
       </Card>
     </Collapsible>
