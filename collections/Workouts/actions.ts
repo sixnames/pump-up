@@ -1,6 +1,5 @@
 'use server';
 
-import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
 import { exerciseGroupsSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { TOAST_SUCCESS } from '@/lib/constants';
@@ -8,7 +7,8 @@ import { alwaysDate, getAppStartOfDay, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, Workout, WorkoutSets } from '@/payload-types';
-import { groupBy, orderBy, sumBy } from 'lodash';
+import { groupBy, meanBy } from 'lodash';
+import set from 'lodash/set';
 
 export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
   key: 'getWorkoutsDateDescription',
@@ -93,9 +93,7 @@ export const getWorkoutById = odSafeQuery<Workout | null, string>({
   },
 });
 
-export type WorkoutSet = NonNullable<WorkoutSets>[number] & {
-  rating: number;
-};
+export type WorkoutSet = NonNullable<WorkoutSets>[number];
 
 export interface GetBestSimilarWorkoutParams {
   exerciseId: string;
@@ -131,28 +129,27 @@ export const getBestSimilarWorkout = odSafeQuery<WorkoutSet | null, GetBestSimil
       return null;
     }
 
-    const allSets = orderBy(
-      data.docs.reduce((acc: WorkoutSet[], workout) => {
-        const currentSet = alwaysArray(workout.sets)[params.setIndex];
-        if (!currentSet) {
-          return acc;
-        }
+    const fields = alwaysArray(exercise.fields);
+    if (fields.length < 1) {
+      return null;
+    }
 
-        const metrics = getWorkoutMetricValues(exercise, [currentSet]);
-        const rating = sumBy(metrics, (metric) => alwaysNumber(metric.value));
-        return [
-          ...acc,
-          {
-            ...currentSet,
-            rating,
-          },
-        ];
-      }, []),
-      ['rating'],
-      ['desc'],
-    );
+    const allSets = data.docs.reduce((acc: WorkoutSet[], workout) => {
+      const currentSet = alwaysArray(workout.sets)[params.setIndex];
+      if (!currentSet) {
+        return acc;
+      }
 
-    return allSets[0] || null;
+      return [...acc, currentSet];
+    }, []);
+
+    const result = {};
+
+    fields.forEach((field) => {
+      set(result, field, alwaysNumber(meanBy(allSets, field).toFixed(1)));
+    });
+
+    return result as WorkoutSet;
   },
 });
 

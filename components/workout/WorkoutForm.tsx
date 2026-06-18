@@ -67,7 +67,6 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
           <div className={'mb-6'} key={field}>
             <FkInput
               className={'mb-0'}
-              delay={0}
               name={`${fieldName}.${field}`}
               label={{ label: fieldLabels[field]?.singular, description: option.description }}
               type={option?.type}
@@ -80,7 +79,7 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
                   : undefined
               }
             />
-            {prevValue ? <div className={' mt-2'}>{`Кращій результат: ${prevValue}`}</div> : null}
+            {prevValue ? <div className={' mt-2'}>{`Середній результат: ${prevValue}`}</div> : null}
           </div>
         );
       })}
@@ -211,7 +210,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         onSubmit={async (values) => {
           await onSubmit(values);
         }}
-        validate={(values) => {
+        validate={async (values) => {
           const errors: Partial<Record<keyof Workout, string>> = {};
           const exercise = values.exercise as Exercise | undefined;
           const fields = alwaysArray(exercise?.fields);

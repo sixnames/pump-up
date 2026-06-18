@@ -11,12 +11,12 @@ export interface OdInputProps extends FKInputCommonProps {
   type?: 'text' | 'email' | 'password' | 'url' | 'search' | 'color' | 'tel' | 'number';
   placeholder?: string;
   pattern?: string;
-  onChangeCallback: (value: string) => void | Promise<void>;
+  onChangeCallback?: (value: string) => void | Promise<void>;
   autoFocus?: boolean;
   icon?: ReactNode;
   onIconClick?: () => void;
   maxLength?: number;
-  onBlur?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void | Promise<void>;
+  onChangeAction: (e: ChangeEvent<HTMLInputElement>) => void | Promise<void>;
   value?: string | null;
   withError?: boolean;
 }
@@ -36,7 +36,7 @@ export default function OdInput({
   onIconClick,
   maxLength,
   removeProps,
-  onBlur,
+  onChangeAction,
   onClear,
   value,
   withError,
@@ -62,7 +62,6 @@ export default function OdInput({
       <div className={'w-full relative flex items-start gap-4'}>
         <div className={'relative w-full z-10'}>
           <Input
-            onBlur={onBlur}
             autoFocus={autoFocus}
             className={cn('w-full bg-background', {
               'border-error': withError,
@@ -77,9 +76,10 @@ export default function OdInput({
             pattern={pattern}
             defaultValue={alwaysString(value)}
             maxLength={maxLength}
-            onInput={async (e) => {
+            onChange={async (e) => {
               const target = e.target as unknown as HTMLInputElement;
-              onChangeCallback(alwaysString(target?.value));
+              await onChangeAction(e);
+              onChangeCallback?.(alwaysString(target?.value));
             }}
           />
         </div>
@@ -92,7 +92,7 @@ export default function OdInput({
 
         {icon ? (
           <div
-            className={cn('absolute top-[0.5rem] left-[0.4rem] z-20 w-5 h-5', {
+            className={cn('absolute top-2 left-[0.4rem] z-20 w-5 h-5', {
               'cursor-pointer hover:text-secondary': !!onIconClick,
             })}
             onClick={onIconClick}
@@ -104,7 +104,7 @@ export default function OdInput({
         {onClear && value ? (
           <OdCrossButton
             onClick={onClear}
-            className={'absolute top-[0.5rem] right-[0.4rem] z-20 w-5 h-5 cursor-pointer hover:text-primary/40'}
+            className={'absolute top-2 right-[0.4rem] z-20 w-5 h-5 cursor-pointer hover:text-primary/40'}
             hidden={!onClear}
           />
         ) : null}

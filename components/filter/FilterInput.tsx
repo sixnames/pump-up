@@ -17,8 +17,8 @@ export default function FilterInput({ name, label, className }: FilterInputProps
       className={className}
       value={value}
       label={label}
-      onChangeCallback={async (value) => {
-        await setValue(value);
+      onChangeAction={async (value) => {
+        await setValue(value.target.value);
       }}
       onClear={async () => {
         await setValue('');
