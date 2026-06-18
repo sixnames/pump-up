@@ -9,7 +9,7 @@ import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
 import FkInput from '@/components/formik/FkInput';
 import NvSelect from '@/components/forms/NvSelect';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
@@ -49,41 +49,44 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
   const fields = alwaysArray(exercise?.fields);
 
   return (
-    <div>
-      <Separator className={'mb-5'} />
-      <div className={'text-muted-foreground mb-1'}>{`${fieldLabels.sets.singular} ${setIndex + 1}`}</div>
-      {fields.map((field, index) => {
-        const option = exerciseFieldOptions.find((option) => {
-          return field === option.value;
-        });
+    <Card className={'mb-6 bg-nested-card'}>
+      <CardHeader>
+        <CardTitle className={'text-success'}>{`${fieldLabels.sets.singular} ${setIndex + 1}`}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {fields.map((field, index) => {
+          const option = exerciseFieldOptions.find((option) => {
+            return field === option.value;
+          });
 
-        if (!option) {
-          return null;
-        }
+          if (!option) {
+            return null;
+          }
 
-        const prevValue = getLastSimilarWorkoutQuery?.data?.[field];
+          const prevValue = getLastSimilarWorkoutQuery?.data?.[field];
 
-        return (
-          <div className={'mb-6'} key={field}>
-            <FkInput
-              className={'mb-0'}
-              name={`${fieldName}.${field}`}
-              label={{ label: fieldLabels[field]?.singular, description: option.description }}
-              type={option?.type}
-              removeProps={
-                index === 0
-                  ? {
-                      remove,
-                      skipConfirm: true,
-                    }
-                  : undefined
-              }
-            />
-            {prevValue ? <div className={' mt-2'}>{`Середній результат: ${prevValue}`}</div> : null}
-          </div>
-        );
-      })}
-    </div>
+          return (
+            <div className={'mb-6'} key={field}>
+              <FkInput
+                className={'mb-0'}
+                name={`${fieldName}.${field}`}
+                label={{ label: fieldLabels[field]?.singular, description: option.description }}
+                type={option?.type}
+                removeProps={
+                  index === 0
+                    ? {
+                        remove,
+                        skipConfirm: true,
+                      }
+                    : undefined
+                }
+              />
+              {prevValue ? <div className={' mt-2'}>{`Середній результат: ${prevValue}`}</div> : null}
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 
