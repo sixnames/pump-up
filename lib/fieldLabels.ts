@@ -404,7 +404,7 @@ export const fieldLabels = {
     singular: 'Вага',
   },
   repetitions: {
-    singular: 'Кількість повторювань',
+    singular: 'Повторення',
   },
   incline: {
     singular: 'Нахил',
