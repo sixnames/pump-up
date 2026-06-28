@@ -144,7 +144,7 @@ function WorkoutFormFields() {
         label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
         value={groupId}
         setValue={async (value) => {
-          await setFieldValue(workoutFieldConfig.groupId, value);
+          await setFieldValue(workoutFieldConfig.groupId, value?.value);
         }}
       />
       <NvSelect
