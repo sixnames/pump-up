@@ -71,7 +71,8 @@ export const Workouts: CollectionConfig = {
         const totalRating = metrics.reduce((acc: number, item) => {
           return acc + alwaysNumber(item.value);
         }, 0);
-        data.rating = metrics.length < 1 ? 0 : totalRating / metrics.length;
+        const rating = metrics.length < 1 ? 0 : totalRating / metrics.length;
+        data.rating = alwaysNumber(rating.toFixed(2));
 
         return data;
       },
