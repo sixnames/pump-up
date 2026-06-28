@@ -3,20 +3,25 @@ import { exerciseFieldOptions } from '@/collections/Exercises';
 import { getExerciseById, getExerciseOptions } from '@/collections/Exercises/actions';
 import { getBestSimilarWorkout } from '@/collections/Workouts/actions';
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
+import OdButton from '@/components/buttons/OdButton';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import FkArrayField from '@/components/formik/FkArrayField';
 import FkButton from '@/components/formik/FkButton';
 import FkDatePicker from '@/components/formik/FkDatePicker';
+import { FKErrorsInfobox } from '@/components/formik/FkErrorsList';
 import FkInput from '@/components/formik/FkInput';
 import NvSelect from '@/components/forms/NvSelect';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
+import { collectYupErrors } from '@/lib/errorUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
+import { getUserActionTitle } from '@/lib/textUtils';
 import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
+import React from 'react';
 
 interface WorkoutSetFieldsProps {
   setIndex: number;
@@ -90,7 +95,8 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
 }
 
 function WorkoutFormFields() {
-  const { values, setFieldValue } = useFormikContext<Partial<Workout>>();
+  const { values, setFieldValue, errors } = useFormikContext<Partial<Workout>>();
+  const errorsList = collectYupErrors(errors);
   const groupId = values.groupId;
   const exercise = values.exercise as Exercise | undefined;
 
@@ -167,24 +173,34 @@ function WorkoutFormFields() {
       <FkDatePicker hideTimeInputs name={workoutFieldConfig.date} label={{ label: fieldLabels.date.singular }} />
 
       <FkArrayField<Partial<NonNullable<WorkoutSets>[number]>>
+        containerClassName={'mb-0'}
         name={workoutFieldConfig.sets}
         title={fieldLabels.sets.plural}
-        addButtonProps={{
-          suffix: fieldLabels.sets.singular,
-          emptyItem: () => {
-            return {
-              id: nanoid(),
-            };
-          },
-        }}
         renderItem={({ fieldName, index, remove }) => {
           return <WorkoutSetFields setIndex={index} remove={remove} fieldName={fieldName} />;
         }}
       />
 
-      <FkButton withKeyboardShortcut showErrorsList>
-        {fieldLabels.save.action}
-      </FkButton>
+      {errorsList.length > 0 ? (
+        <FKErrorsInfobox errorsList={errorsList} className={'mb-6'} title={'Заповніть наступні поля:'} />
+      ) : null}
+
+      <div className={'flex justify-between'}>
+        <OdButton
+          variant={'secondary'}
+          onClick={async () => {
+            const sets = alwaysArray(values.sets);
+            const newSet: Partial<NonNullable<WorkoutSets>[number]> = {
+              id: nanoid(),
+            };
+            await setFieldValue(workoutFieldConfig.sets, [...sets, newSet]);
+          }}
+        >
+          {getUserActionTitle(fieldLabels.sets.singular).add}
+        </OdButton>
+
+        <FkButton withKeyboardShortcut>{fieldLabels.save.action}</FkButton>
+      </div>
     </Form>
   );
 }
