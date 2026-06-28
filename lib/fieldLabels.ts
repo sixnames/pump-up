@@ -129,6 +129,9 @@ export const fieldLabels = {
   date: {
     singular: 'Дата',
   },
+  metrics: {
+    singular: 'Метрика',
+  },
   signers: {
     singular: 'Підписант',
     plural: 'Підписанти',

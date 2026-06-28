@@ -8,6 +8,18 @@
 
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkoutMetrics".
+ */
+export type WorkoutMetrics =
+  | {
+      key?: string | null;
+      label?: string | null;
+      value?: number | null;
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "WorkoutSets".
  */
 export type WorkoutSets = {
@@ -187,9 +199,12 @@ export interface Exercise {
 export interface Workout {
   id: string;
   userId: string;
+  groupId: string;
+  exercise: string | Exercise;
+  rating?: number | null;
+  metrics?: WorkoutMetrics;
   date: string;
   sets: WorkoutSets;
-  exercise: string | Exercise;
   updatedAt: string;
   createdAt: string;
 }
@@ -372,11 +387,24 @@ export interface ExercisesSelect<T extends boolean = true> {
  */
 export interface WorkoutsSelect<T extends boolean = true> {
   userId?: T;
+  groupId?: T;
+  exercise?: T;
+  rating?: T;
+  metrics?: T | WorkoutMetricsSelect<T>;
   date?: T;
   sets?: T | WorkoutSetsSelect<T>;
-  exercise?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkoutMetrics_select".
+ */
+export interface WorkoutMetricsSelect<T extends boolean = true> {
+  key?: T;
+  label?: T;
+  value?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

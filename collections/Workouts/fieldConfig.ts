@@ -11,4 +11,7 @@ export const workoutFieldConfig = {
   speed: 'speed',
   distance: 'distance',
   minutes: 'minutes',
+  groupId: 'groupId',
+  metrics: 'metrics',
+  rating: 'rating',
 };

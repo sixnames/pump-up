@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { exerciseGroupsSlug, exercisesSlug, rolesSlug, usersSlug, workoutsSlug } from '@/lib/collectionNames';
+import { daysSlug, exerciseGroupsSlug, exercisesSlug, rolesSlug, usersSlug, workoutsSlug } from '@/lib/collectionNames';
 import { MongoClient } from 'mongodb';
 
 (async () => {
@@ -24,7 +24,7 @@ import { MongoClient } from 'mongodb';
     await db.collection(collectionName).insertMany(docs);
   }
 
-  const collections = [usersSlug, rolesSlug, exercisesSlug, exerciseGroupsSlug, workoutsSlug];
+  const collections = [usersSlug, rolesSlug, exercisesSlug, exerciseGroupsSlug, daysSlug, workoutsSlug];
 
   for (const collection of collections) {
     console.log(`Seeding ${collection} collection`);

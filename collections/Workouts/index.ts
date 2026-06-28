@@ -1,8 +1,10 @@
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
+import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
 import { daysSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
-import { alwaysArray } from '@/lib/commonUtils';
+import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
+import { startOfDay } from 'date-fns';
 import type { CollectionConfig, NumberField, TextField } from 'payload';
 
 export const setFields: (NumberField | TextField)[] = [
@@ -45,16 +47,49 @@ export const Workouts: CollectionConfig = {
     plural: fieldLabels.workout.singular,
   },
   defaultSort: `-${workoutFieldConfig.date}`,
+  timestamps: true,
   admin: {
-    hidden: true,
+    // hidden: true,
   },
   hooks: {
+    beforeChange: [
+      async ({ req, data }) => {
+        const payload = req.payload;
+        const workout = data as Workout;
+        let exercise = workout.exercise;
+        if (typeof exercise === 'string') {
+          exercise = await payload.findByID({
+            collection: exercisesSlug,
+            id: exercise,
+          });
+        }
+        const exerciseGroup = exercise.group as ExerciseGroup;
+        data.groupId = exerciseGroup?.id;
+
+        const metrics = getWorkoutMetricValues(exercise, alwaysArray(workout.sets));
+        data.metrics = metrics;
+        const totalRating = metrics.reduce((acc: number, item) => {
+          return acc + alwaysNumber(item.value);
+        }, 0);
+        data.rating = metrics.length < 1 ? 0 : totalRating / metrics.length;
+
+        return data;
+      },
+    ],
     afterChange: [
       async ({ req, doc }) => {
         const payload = req.payload;
         const workout = doc as Workout;
-        const exercise = workout.exercise as Exercise;
+        let exercise = workout.exercise;
+        if (typeof exercise === 'string') {
+          exercise = await payload.findByID({
+            collection: exercisesSlug,
+            id: exercise,
+          });
+        }
         const exerciseGroup = exercise.group as ExerciseGroup;
+
+        const date = startOfDay(workout.date).toISOString();
 
         const days = await payload.find({
           collection: daysSlug,
@@ -65,7 +100,7 @@ export const Workouts: CollectionConfig = {
               equals: workout.userId,
             },
             date: {
-              equals: workout.date,
+              equals: date,
             },
           },
         });
@@ -77,7 +112,7 @@ export const Workouts: CollectionConfig = {
             depth: 0,
             data: {
               userId: workout.userId,
-              date: workout.date,
+              date,
               exerciseGroups: [],
               workouts: [],
             },
@@ -87,15 +122,15 @@ export const Workouts: CollectionConfig = {
         const exerciseGroupsSet = new Set(day.exerciseGroups as string[]);
         exerciseGroupsSet.add(exerciseGroup.id);
 
-        const dayWorkouts = alwaysArray(day.workouts) as string[];
-        const workouts = [...dayWorkouts, workout.id];
+        const dayWorkoutsSet = new Set(alwaysArray(day.workouts) as string[]);
+        dayWorkoutsSet.add(workout.id);
 
         await payload.update({
           collection: daysSlug,
           id: day.id,
           data: {
             exerciseGroups: Array.from(exerciseGroupsSet),
-            workouts,
+            workouts: Array.from(dayWorkoutsSet),
           },
         });
       },
@@ -107,7 +142,7 @@ export const Workouts: CollectionConfig = {
           collection: workoutsSlug,
           id,
         });
-        const date = workout.date;
+        const date = startOfDay(workout.date).toISOString();
 
         const days = await payload.find({
           collection: daysSlug,
@@ -165,6 +200,54 @@ export const Workouts: CollectionConfig = {
       type: 'text',
       name: workoutFieldConfig.userId,
       required: true,
+      admin: { position: 'sidebar' },
+      index: true,
+    },
+    {
+      type: 'text',
+      name: workoutFieldConfig.groupId,
+      required: true,
+      admin: { position: 'sidebar' },
+      index: true,
+    },
+    {
+      type: 'relationship',
+      name: workoutFieldConfig.exercise,
+      label: fieldLabels.exercise.singular.nominative,
+      relationTo: exercisesSlug,
+      required: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      type: 'number',
+      name: workoutFieldConfig.rating,
+      label: fieldLabels.rating.singular,
+      defaultValue: 0,
+    },
+    {
+      type: 'array',
+      name: workoutFieldConfig.metrics,
+      label: fieldLabels.metrics.singular,
+      interfaceName: 'WorkoutMetrics',
+      admin: {
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          type: 'text',
+          name: 'key',
+        },
+        {
+          type: 'text',
+          name: 'label',
+        },
+        {
+          type: 'number',
+          name: 'value',
+        },
+      ],
     },
     {
       name: workoutFieldConfig.date,
@@ -179,13 +262,6 @@ export const Workouts: CollectionConfig = {
       required: true,
       interfaceName: 'WorkoutSets',
       fields: setFields,
-    },
-    {
-      type: 'relationship',
-      name: workoutFieldConfig.exercise,
-      label: fieldLabels.exercise.singular.nominative,
-      relationTo: exercisesSlug,
-      required: true,
     },
   ],
 };

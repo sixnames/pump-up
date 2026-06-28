@@ -1,9 +1,10 @@
 import OdTitle from '@/components/common/OdTitle';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
-import { workoutsSlug } from '@/lib/collectionNames';
+import { daysSlug, workoutsSlug } from '@/lib/collectionNames';
+import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { getPD, protectedRoute } from '@/lib/payloadUtils';
 import { urlConfig } from '@/lib/urlUtils';
-import { addMinutes } from 'date-fns';
+import { addMinutes, startOfDay } from 'date-fns';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -24,19 +25,59 @@ export default async function Page() {
   }
 
   const payload = await getPD();
+
+  const days = await payload.find({
+    collection: daysSlug,
+    pagination: false,
+    depth: 0,
+    where: {},
+  });
+
+  let daysCounter = 0;
+  for (const day of days.docs) {
+    const { id } = day;
+    await payload.update({
+      collection: daysSlug,
+      id,
+      data: {
+        date: startOfDay(day.date).toISOString(),
+      },
+    });
+
+    daysCounter++;
+    console.log(`Updated ${daysCounter} days of ${days.totalDocs}`);
+  }
+
   const workouts = await payload.find({
     collection: workoutsSlug,
     depth: 0,
     pagination: false,
   });
+
+  let counter = 0;
   for (const workout of workouts.docs) {
+    const { id, ...data } = workout;
     await payload.update({
       collection: workoutsSlug,
-      id: workout.id,
+      id,
       data: {
+        ...data,
+        sets: alwaysArray(data.sets).map((set) => {
+          return {
+            ...set,
+            minutes: alwaysNumber(set?.minutes),
+            incline: alwaysNumber(set?.incline),
+            speed: alwaysNumber(set?.speed),
+            distance: alwaysNumber(set?.distance),
+            repetitions: alwaysNumber(set.repetitions),
+            weight: alwaysNumber(set.weight),
+          };
+        }),
         createdAt: addMinutes(workout.createdAt, 1).toISOString(),
       },
     });
+    counter++;
+    console.log(`Updated ${counter} workouts of ${workouts.totalDocs}`);
   }
 
   return (
