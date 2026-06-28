@@ -3,7 +3,6 @@ import OdQueryLoader from '@/components/common/OdQueryLoader';
 import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext';
 import { Badge } from '@/components/ui/badge';
 import { urlConfig } from '@/lib/urlUtils';
-import { ExerciseGroup } from '@/payload-types';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -46,12 +45,9 @@ export default function WorkoutsDateSuggestions({
       <div className={'font-bold mb-4'}>Ви робили:</div>
       <div className={'flex flex-wrap gap-4'}>
         {getWorkoutsDateDescriptionQuery.data.map((exercise) => {
-          const group = exercise.group as ExerciseGroup;
           return (
             <Badge key={exercise.id} variant={'secondary'}>
-              <a href={`${urlConfig.app.links.createWorkout.url}?groupId=${group?.id}&exerciseId=${exercise.id}`}>
-                {exercise.label}
-              </a>
+              <a href={`${urlConfig.app.links.createWorkout.url}?exerciseId=${exercise.id}`}>{exercise.label}</a>
             </Badge>
           );
         })}

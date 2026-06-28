@@ -12,12 +12,11 @@ import NvSelect from '@/components/forms/NvSelect';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
-import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
+import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
-import { useState } from 'react';
 
 interface WorkoutSetFieldsProps {
   setIndex: number;
@@ -90,15 +89,9 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
   );
 }
 
-interface WorkoutFormFieldsProps {
-  initialGroupId?: string;
-}
-
-function WorkoutFormFields({ initialGroupId }: WorkoutFormFieldsProps) {
+function WorkoutFormFields() {
   const { values, setFieldValue } = useFormikContext<Partial<Workout>>();
-  const [groupId, setGroupId] = useState<string | undefined>(() => {
-    return initialGroupId;
-  });
+  const groupId = values.groupId;
   const exercise = values.exercise as Exercise | undefined;
 
   const exerciseGroupOptionsQuery = useQuery({
@@ -151,7 +144,7 @@ function WorkoutFormFields({ initialGroupId }: WorkoutFormFieldsProps) {
         label={{ label: fieldLabels.exerciseGroup.singular.nominative, required: true }}
         value={groupId}
         setValue={async (value) => {
-          setGroupId(value?.value);
+          await setFieldValue(workoutFieldConfig.groupId, value);
         }}
       />
       <NvSelect
@@ -190,7 +183,7 @@ function WorkoutFormFields({ initialGroupId }: WorkoutFormFieldsProps) {
       />
 
       <FkButton withKeyboardShortcut showErrorsList>
-        {values.id ? fieldLabels.update.action : fieldLabels.add.action}
+        {fieldLabels.save.action}
       </FkButton>
     </Form>
   );
@@ -202,9 +195,6 @@ interface WorkoutFormProps {
 }
 
 export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProps) {
-  const exercise = initialValues.exercise as Exercise | undefined;
-  const group = exercise?.group as ExerciseGroup | undefined;
-
   return (
     <div className={'max-w-140 mx-auto'}>
       <Formik<Partial<Workout>>
@@ -251,7 +241,7 @@ export default function WorkoutForm({ initialValues, onSubmit }: WorkoutFormProp
         }}
       >
         {() => {
-          return <WorkoutFormFields initialGroupId={group?.id} />;
+          return <WorkoutFormFields />;
         }}
       </Formik>
     </div>
