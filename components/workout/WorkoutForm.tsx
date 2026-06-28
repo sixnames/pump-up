@@ -187,6 +187,7 @@ function WorkoutFormFields() {
 
       <div className={'flex justify-between'}>
         <OdButton
+          disabled={!values.exercise}
           variant={'secondary'}
           onClick={async () => {
             const sets = alwaysArray(values.sets);
