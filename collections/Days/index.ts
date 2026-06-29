@@ -1,6 +1,7 @@
 import { dayFieldConfig } from '@/collections/Days/fieldConfig';
 import { daysSlug, exerciseGroupsSlug, workoutsSlug } from '@/lib/collectionNames';
 import { fieldLabels } from '@/lib/fieldLabels';
+import { startOfDay } from 'date-fns';
 import type { CollectionConfig } from 'payload';
 
 export const Days: CollectionConfig = {
@@ -11,6 +12,18 @@ export const Days: CollectionConfig = {
   },
   defaultSort: `-${dayFieldConfig.date}`,
   admin: {},
+  hooks: {
+    beforeChange: [
+      async ({ data }) => {
+        if (!data.date) {
+          return data;
+        }
+        data.date = startOfDay(data.date);
+
+        return data;
+      },
+    ],
+  },
   fields: [
     {
       type: 'text',

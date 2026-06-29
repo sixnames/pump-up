@@ -1,13 +1,13 @@
 'use server';
 
 import { daysSlug } from '@/lib/collectionNames';
-import { getToday } from '@/lib/dateUtils';
+import { alwaysDate } from '@/lib/dateUtils';
 import { odSafeQuery } from '@/lib/safeAction';
 import { Day } from '@/payload-types';
 
-export const getTodayDay = odSafeQuery<Day | null, void>({
+export const getTodayDay = odSafeQuery<Day | null, Date | string>({
   key: 'getTodayDay',
-  action: async ({ payload, user }) => {
+  action: async ({ payload, user, params }) => {
     if (!user) {
       return null;
     }
@@ -18,7 +18,7 @@ export const getTodayDay = odSafeQuery<Day | null, void>({
       depth: 0,
       where: {
         date: {
-          equals: getToday().toISOString(),
+          equals: alwaysDate(params).toISOString(),
         },
         userId: {
           equals: user.id,
