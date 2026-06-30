@@ -1,7 +1,6 @@
 'use server';
 
 import { daysSlug } from '@/lib/collectionNames';
-import { getDayId } from '@/lib/dateUtils';
 import { odSafeQuery } from '@/lib/safeAction';
 import { Day } from '@/payload-types';
 
@@ -21,7 +20,7 @@ export const getTodayDay = odSafeQuery<Day | null, Date | string>({
           equals: user.id,
         },
         dayId: {
-          equals: getDayId(params),
+          equals: params,
         },
       },
     });

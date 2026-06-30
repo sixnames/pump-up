@@ -4,21 +4,21 @@ import { getTodayDay } from '@/collections/Days/actions';
 import OdButton from '@/components/buttons/OdButton';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import WorkoutsDate from '@/components/workout/WorkoutsDate';
-import { getReadableDate } from '@/lib/dateUtils';
+import { getDayId, getReadableDate } from '@/lib/dateUtils';
 import { urlConfig } from '@/lib/urlUtils';
 import { useProgress } from '@bprogress/next';
 import { useQuery } from '@tanstack/react-query';
-import { startOfToday } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export default function MainPage() {
   const router = useRouter();
   const { start } = useProgress();
-  const date = startOfToday().toISOString();
+  const date = new Date();
+  const dayId = getDayId(date);
   const dayQuery = useQuery({
-    queryKey: ['day', date],
-    queryFn: async () => getTodayDay(date),
+    queryKey: ['day', dayId],
+    queryFn: async () => getTodayDay(dayId),
   });
 
   if (dayQuery.isLoading) {
