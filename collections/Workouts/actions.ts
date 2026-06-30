@@ -64,7 +64,7 @@ export const getWorkoutSuggestions = odSafeQuery<Exercise[], GetWorkoutSuggestio
         $match: {
           $and: [
             {
-              _id: {
+              exercise: {
                 $nin: params.addedExerciseIds.map((id) => new ObjectId(id)),
               },
             },
