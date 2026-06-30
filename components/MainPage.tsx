@@ -4,7 +4,7 @@ import { getTodayDay } from '@/collections/Days/actions';
 import OdButton from '@/components/buttons/OdButton';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import WorkoutsDate from '@/components/workout/WorkoutsDate';
-import { getDayId, getReadableDate } from '@/lib/dateUtils';
+import { getDayId } from '@/lib/dateUtils';
 import { urlConfig } from '@/lib/urlUtils';
 import { useProgress } from '@bprogress/next';
 import { useQuery } from '@tanstack/react-query';
@@ -29,7 +29,6 @@ export default function MainPage() {
   return (
     <div>
       <div className={'space-y-2 mb-6'}>
-        <div>{getReadableDate({ date }).readableDate}</div>
         <OdButton
           onClick={() => {
             start();
