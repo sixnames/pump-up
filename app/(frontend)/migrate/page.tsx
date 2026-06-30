@@ -2,9 +2,10 @@ import OdTitle from '@/components/common/OdTitle';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 import { daysSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
+import { getDayId } from '@/lib/dateUtils';
 import { getPD, protectedRoute } from '@/lib/payloadUtils';
 import { urlConfig } from '@/lib/urlUtils';
-import { addMinutes, startOfDay } from 'date-fns';
+import { addMinutes } from 'date-fns';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -36,11 +37,13 @@ export default async function Page() {
   let daysCounter = 0;
   for (const day of days.docs) {
     const { id } = day;
+    const date = new Date(day.date).toISOString();
     await payload.update({
       collection: daysSlug,
       id,
       data: {
-        date: startOfDay(day.date).toISOString(),
+        date,
+        dayId: getDayId(date),
       },
     });
 
@@ -57,25 +60,33 @@ export default async function Page() {
   let counter = 0;
   for (const workout of workouts.docs) {
     const { id, ...data } = workout;
-    await payload.update({
-      collection: workoutsSlug,
-      id,
-      data: {
-        ...data,
-        sets: alwaysArray(data.sets).map((set) => {
-          return {
-            ...set,
-            minutes: alwaysNumber(set?.minutes),
-            incline: alwaysNumber(set?.incline),
-            speed: alwaysNumber(set?.speed),
-            distance: alwaysNumber(set?.distance),
-            repetitions: alwaysNumber(set.repetitions),
-            weight: alwaysNumber(set.weight),
-          };
-        }),
-        createdAt: addMinutes(workout.createdAt, 1).toISOString(),
-      },
-    });
+    const date = new Date(data.date).toISOString();
+
+    try {
+      await payload.update({
+        collection: workoutsSlug,
+        id,
+        data: {
+          ...data,
+          date,
+          dayId: getDayId(date),
+          sets: alwaysArray(data.sets).map((set) => {
+            return {
+              ...set,
+              minutes: alwaysNumber(set?.minutes),
+              incline: alwaysNumber(set?.incline),
+              speed: alwaysNumber(set?.speed),
+              distance: alwaysNumber(set?.distance),
+              repetitions: alwaysNumber(set.repetitions),
+              weight: alwaysNumber(set.weight),
+            };
+          }),
+          createdAt: addMinutes(workout.createdAt, 1).toISOString(),
+        },
+      });
+    } catch (error) {
+      console.error({ error, d: data.date, date });
+    }
     counter++;
     console.log(`Updated ${counter} workouts of ${workouts.totalDocs}`);
   }

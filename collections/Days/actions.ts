@@ -1,7 +1,7 @@
 'use server';
 
 import { daysSlug } from '@/lib/collectionNames';
-import { alwaysDate } from '@/lib/dateUtils';
+import { getDayId } from '@/lib/dateUtils';
 import { odSafeQuery } from '@/lib/safeAction';
 import { Day } from '@/payload-types';
 
@@ -17,11 +17,11 @@ export const getTodayDay = odSafeQuery<Day | null, Date | string>({
       pagination: false,
       depth: 0,
       where: {
-        date: {
-          equals: alwaysDate(params).toISOString(),
-        },
         userId: {
           equals: user.id,
+        },
+        dayId: {
+          equals: getDayId(params),
         },
       },
     });

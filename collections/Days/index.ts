@@ -32,6 +32,12 @@ export const Days: CollectionConfig = {
       index: true,
     },
     {
+      type: 'text',
+      name: dayFieldConfig.dayId,
+      required: true,
+      index: true,
+    },
+    {
       name: dayFieldConfig.date,
       type: 'date',
       admin: { date: { displayFormat: 'dd.MM.yyyy' } },

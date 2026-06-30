@@ -5,4 +5,5 @@ export const dayFieldConfig = {
   workouts: 'workouts',
   userId: 'userId',
   date: commonFieldConfig.date,
+  dayId: commonFieldConfig.dayId,
 };

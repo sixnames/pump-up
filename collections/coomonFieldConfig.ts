@@ -5,6 +5,7 @@ export const commonFieldConfig = {
   start: 'start',
   end: 'end',
   date: 'date',
+  dayId: 'dayId',
   signers: 'signers',
   eventDate: 'eventDate',
   endDate: 'endDate',

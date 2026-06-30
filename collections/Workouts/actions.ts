@@ -213,6 +213,7 @@ export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
         exercise: exercise?.id,
         groupId: group?.id,
         date: alwaysDate(params.date).toISOString(),
+        dayId: alwaysString(params.dayId),
         metrics: [],
         rating: 0,
         sets: alwaysArray(params.sets).map((set) => {
@@ -251,6 +252,7 @@ export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
       data: {
         exercise: (values.exercise as Exercise)?.id,
         date: alwaysDate(params.date).toISOString(),
+        dayId: alwaysString(params.dayId),
         userId: alwaysString(user?.id),
         groupId: group?.id,
         metrics: [],

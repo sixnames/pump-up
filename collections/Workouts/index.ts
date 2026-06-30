@@ -99,8 +99,8 @@ export const Workouts: CollectionConfig = {
             userId: {
               equals: workout.userId,
             },
-            date: {
-              equals: date,
+            dayId: {
+              equals: workout.dayId,
             },
           },
         });
@@ -113,6 +113,7 @@ export const Workouts: CollectionConfig = {
             data: {
               userId: workout.userId,
               date,
+              dayId: workout.dayId,
               exerciseGroups: [],
               workouts: [],
             },
@@ -142,7 +143,6 @@ export const Workouts: CollectionConfig = {
           collection: workoutsSlug,
           id,
         });
-        const date = new Date(workout.date).toISOString();
 
         const days = await payload.find({
           collection: daysSlug,
@@ -152,8 +152,8 @@ export const Workouts: CollectionConfig = {
             userId: {
               equals: workout.userId,
             },
-            date: {
-              equals: date,
+            dayId: {
+              equals: workout.dayId,
             },
           },
         });
@@ -179,9 +179,11 @@ export const Workouts: CollectionConfig = {
 
         const exerciseGroupsSet = new Set<string>();
         workouts.forEach((item) => {
-          const exercise = item.exercise as Exercise;
-          const group = exercise.group as string;
-          exerciseGroupsSet.add(group);
+          const exercise = item.exercise as Exercise | undefined;
+          const group = exercise?.group as string;
+          if (group) {
+            exerciseGroupsSet.add(group);
+          }
         });
 
         await payload.update({
@@ -253,6 +255,12 @@ export const Workouts: CollectionConfig = {
       name: workoutFieldConfig.date,
       type: 'date',
       admin: { date: { displayFormat: 'dd.MM.yyyy' } },
+      label: fieldLabels.date.singular,
+      required: true,
+    },
+    {
+      name: workoutFieldConfig.dayId,
+      type: 'text',
       label: fieldLabels.date.singular,
       required: true,
     },

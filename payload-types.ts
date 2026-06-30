@@ -159,6 +159,7 @@ export interface UserAuthOperations {
 export interface Day {
   id: string;
   userId: string;
+  dayId: string;
   date: string;
   exerciseGroups?: (string | ExerciseGroup)[] | null;
   workouts?: (string | Workout)[] | null;
@@ -204,6 +205,7 @@ export interface Workout {
   rating?: number | null;
   metrics?: WorkoutMetrics;
   date: string;
+  dayId: string;
   sets: WorkoutSets;
   updatedAt: string;
   createdAt: string;
@@ -354,6 +356,7 @@ export interface PayloadMigration {
  */
 export interface DaysSelect<T extends boolean = true> {
   userId?: T;
+  dayId?: T;
   date?: T;
   exerciseGroups?: T;
   workouts?: T;
@@ -392,6 +395,7 @@ export interface WorkoutsSelect<T extends boolean = true> {
   rating?: T;
   metrics?: T | WorkoutMetricsSelect<T>;
   date?: T;
+  dayId?: T;
   sets?: T | WorkoutSetsSelect<T>;
   updatedAt?: T;
   createdAt?: T;

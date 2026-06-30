@@ -276,3 +276,11 @@ export function safeDate(date?: Date | string | null, fallback?: Date | string):
 export function alwaysDate(date?: Date | string | null, fallback?: Date | string): Date {
   return safeDate(date, fallback) as Date;
 }
+
+export function getDayId(date?: Date | string | null) {
+  if (!date) {
+    return '';
+  }
+  const realDate = new Date(date);
+  return `${realDate.getFullYear()}-${realDate.getMonth() + 1}-${realDate.getDate()}`;
+}

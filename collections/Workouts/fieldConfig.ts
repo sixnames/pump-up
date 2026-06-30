@@ -4,6 +4,7 @@ export const workoutFieldConfig = {
   exercise: commonFieldConfig.exercise,
   userId: 'userId',
   date: commonFieldConfig.date,
+  dayId: commonFieldConfig.dayId,
   weight: 'weight',
   repetitions: 'repetitions',
   sets: 'sets',

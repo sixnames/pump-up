@@ -5,10 +5,10 @@ import { createWorkout } from '@/collections/Workouts/actions';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import WorkoutForm from '@/components/workout/WorkoutForm';
 import { useOdMutation } from '@/hooks/useOdMutation';
+import { getDayId } from '@/lib/dateUtils';
 import { ExerciseGroup } from '@/payload-types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ObjectId } from 'bson';
-import { startOfDay } from 'date-fns';
 import { useQueryState } from 'nuqs';
 
 export default function CreateWorkoutPage() {
@@ -40,11 +40,14 @@ export default function CreateWorkoutPage() {
 
   const exercise = exerciseQuery.data || undefined;
   const group = exercise?.group as ExerciseGroup | undefined;
+  const date = new Date();
+  const dayId = getDayId(date);
 
   return (
     <WorkoutForm
       initialValues={{
-        date: startOfDay(new Date()).toISOString(),
+        date: date.toISOString(),
+        dayId,
         exercise: exerciseQuery.data || undefined,
         sets: [
           {
