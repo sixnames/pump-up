@@ -4,7 +4,6 @@ import { daysSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
-import { startOfDay } from 'date-fns';
 import type { CollectionConfig, NumberField, TextField } from 'payload';
 
 export const setFields: (NumberField | TextField)[] = [
@@ -90,7 +89,7 @@ export const Workouts: CollectionConfig = {
         }
         const exerciseGroup = exercise.group as ExerciseGroup;
 
-        const date = startOfDay(workout.date).toISOString();
+        const date = new Date(workout.date).toISOString();
 
         const days = await payload.find({
           collection: daysSlug,
@@ -143,7 +142,7 @@ export const Workouts: CollectionConfig = {
           collection: workoutsSlug,
           id,
         });
-        const date = startOfDay(workout.date).toISOString();
+        const date = new Date(workout.date).toISOString();
 
         const days = await payload.find({
           collection: daysSlug,
