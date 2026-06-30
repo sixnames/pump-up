@@ -2,6 +2,7 @@ import { DeclensionEnum } from '@/@types/enums';
 import { alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { MONTH_WORDS, WEEK_DAYS } from '@/lib/constants';
 import addZero from 'add-zero';
+import { startOfToday } from 'date-fns';
 
 export const APP_TIME_ZONE = 'Europe/Kyiv';
 
@@ -63,28 +64,6 @@ export function getAppDateKey(date?: Date | string | null) {
   return `${year}-${addZero(month)}-${addZero(day)}`;
 }
 
-export function getAppStartOfDay(date?: Date | string | null) {
-  const eventDate = safeDate(date);
-  if (!eventDate) {
-    return undefined;
-  }
-  const { year, month, day } = getAppDateParts(eventDate);
-  return appDateToUtc(year, month - 1, day);
-}
-
-export function getAppDayRange(date?: Date | string | null) {
-  const eventDate = safeDate(date);
-  if (!eventDate) {
-    return undefined;
-  }
-  const { year, month, day } = getAppDateParts(eventDate);
-
-  return {
-    start: appDateToUtc(year, month - 1, day),
-    end: appDateToUtc(year, month - 1, day + 1),
-  };
-}
-
 function getAppWeekDayIndex(date: Date) {
   const weekDay = new Intl.DateTimeFormat('en-US', {
     timeZone: APP_TIME_ZONE,
@@ -95,7 +74,7 @@ function getAppWeekDayIndex(date: Date) {
 }
 
 export function getToday() {
-  return alwaysDate(getAppStartOfDay(new Date()));
+  return startOfToday();
 }
 
 export type GetReadableDateMonthVariant = 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined;

@@ -1,5 +1,4 @@
 import { SelectDataItem } from '@/@types/common-types';
-import { getToday } from '@/lib/dateUtils';
 
 // event variant ast block slugs
 export const eventVariantTextBlockSlug = 'eventVariantTextBlock';
@@ -298,7 +297,7 @@ export const MONTH_WORDS: MontWordsConfig[] = [
 ];
 
 const yearOptionsStart = 1930;
-const yearOptionsEnd = getToday().getFullYear() + 5;
+const yearOptionsEnd = new Date().getFullYear() + 5;
 const yearOptionsLength = yearOptionsEnd - yearOptionsStart;
 export const options = Array.from({ length: yearOptionsLength }, (_, i) => {
   const value = `${yearOptionsStart + i}`;

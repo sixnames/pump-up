@@ -4,7 +4,7 @@ import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import { exerciseGroupsSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber, alwaysString } from '@/lib/commonUtils';
 import { SORT_DESC_STR, TOAST_SUCCESS } from '@/lib/constants';
-import { alwaysDate, getAppStartOfDay, getReadableDate } from '@/lib/dateUtils';
+import { alwaysDate, getReadableDate } from '@/lib/dateUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
@@ -212,7 +212,7 @@ export const createWorkout = odSafeMutation<Workout, Partial<Workout>>({
         userId: alwaysString(user?.id),
         exercise: exercise?.id,
         groupId: group?.id,
-        date: alwaysDate(getAppStartOfDay(params.date)).toISOString(),
+        date: alwaysDate(params.date).toISOString(),
         metrics: [],
         rating: 0,
         sets: alwaysArray(params.sets).map((set) => {
@@ -250,7 +250,7 @@ export const updateWorkout = odSafeMutation<Workout, Partial<Workout>>({
       id: alwaysString(id),
       data: {
         exercise: (values.exercise as Exercise)?.id,
-        date: alwaysDate(getAppStartOfDay(params.date)).toISOString(),
+        date: alwaysDate(params.date).toISOString(),
         userId: alwaysString(user?.id),
         groupId: group?.id,
         metrics: [],
