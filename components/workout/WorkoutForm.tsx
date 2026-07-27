@@ -18,6 +18,7 @@ import { fieldLabels } from '@/lib/fieldLabels';
 import { getUserActionTitle } from '@/lib/textUtils';
 import { Exercise, Workout, WorkoutSets } from '@/payload-types';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { ObjectId } from 'bson';
 import { Form, Formik, useFormikContext } from 'formik';
 import set from 'lodash/set';
 import { nanoid } from 'nanoid';
@@ -120,6 +121,13 @@ function WorkoutFormFields() {
       if (!exercise) {
         return;
       }
+      const defaultSetsCount = exercise?.defaultSetsCount || 1;
+      const sets = Array.from({ length: defaultSetsCount }, () => {
+        return {
+          id: new ObjectId().toHexString(),
+        };
+      });
+      await setFieldValue(workoutFieldConfig.sets, sets);
       await setFieldValue(workoutFieldConfig.exercise, exercise);
     },
   });

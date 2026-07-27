@@ -190,6 +190,7 @@ export interface Exercise {
   label?: string | null;
   group?: (string | null) | ExerciseGroup;
   fields?: ('weight' | 'repetitions' | 'speed' | 'minutes' | 'distance' | 'incline')[] | null;
+  defaultSetsCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -381,6 +382,7 @@ export interface ExercisesSelect<T extends boolean = true> {
   label?: T;
   group?: T;
   fields?: T;
+  defaultSetsCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }

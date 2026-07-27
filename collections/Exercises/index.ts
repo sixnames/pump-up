@@ -44,5 +44,11 @@ export const Exercises: CollectionConfig = {
       options: exerciseFieldOptions,
       defaultValue: [workoutFieldConfig.weight, workoutFieldConfig.repetitions],
     },
+    {
+      name: exerciseFieldConfig.defaultSetsCount,
+      label: fieldLabels.defaultSetsCount.singular,
+      type: 'number',
+      defaultValue: 4,
+    },
   ],
 };

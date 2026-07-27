@@ -425,6 +425,9 @@ export const fieldLabels = {
     singular: 'Підхід',
     plural: 'Підходи',
   },
+  defaultSetsCount: {
+    singular: 'Кількість підходів під час створення',
+  },
 
   // calendar
   calendar: {

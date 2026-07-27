@@ -39,21 +39,23 @@ export default function CreateWorkoutPage() {
   }
 
   const exercise = exerciseQuery.data || undefined;
+  const defaultSetsCount = exercise?.defaultSetsCount || 1;
   const group = exercise?.group as ExerciseGroup | undefined;
   const date = new Date();
   const dayId = getDayId(date);
+  const sets = Array.from({ length: defaultSetsCount }, () => {
+    return {
+      id: new ObjectId().toHexString(),
+    };
+  });
 
   return (
     <WorkoutForm
       initialValues={{
         date: date.toISOString(),
         dayId,
-        exercise: exerciseQuery.data || undefined,
-        sets: [
-          {
-            id: new ObjectId().toHexString(),
-          },
-        ],
+        exercise: exercise || undefined,
+        sets,
         groupId: group?.id,
       }}
       onSubmit={async (values) => {
