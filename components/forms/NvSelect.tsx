@@ -90,7 +90,6 @@ export default function NvSelect({
             onChange={async (e) => {
               const target = e.target as unknown as HTMLSelectElement;
               const value = target.value;
-              console.log(value);
               const selectedOption = finalOptions.find((option) => option.value === value);
 
               if (value === emptyOptionValue) {
