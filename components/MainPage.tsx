@@ -27,7 +27,7 @@ export default function MainPage() {
 
   const day = dayQuery.data;
   return (
-    <div>
+    <div className={'pb-12'}>
       <div className={'space-y-2 mb-6'}>
         <OdButton
           onClick={() => {
