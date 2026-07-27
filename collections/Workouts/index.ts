@@ -261,7 +261,7 @@ export const Workouts: CollectionConfig = {
     {
       name: workoutFieldConfig.dayId,
       type: 'text',
-      label: fieldLabels.date.singular,
+      label: fieldLabels.dayId.singular,
       required: true,
     },
     {
