@@ -2,6 +2,7 @@ import { getWorkoutSuggestions } from '@/collections/Workouts/actions';
 import OdQueryLoader from '@/components/common/OdQueryLoader';
 import { useGlobalConfigContext } from '@/components/context/GlobalConfigContext';
 import { Badge } from '@/components/ui/badge';
+import { fieldLabels } from '@/lib/fieldLabels';
 import { urlConfig } from '@/lib/urlUtils';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -42,7 +43,7 @@ export default function WorkoutsDateSuggestions({
 
   return (
     <div className={'mb-6'}>
-      <div className={'font-bold mb-4'}>Ви робили:</div>
+      <div className={'font-bold mb-4'}>{`${fieldLabels.suggestion.plural}:`}</div>
       <div className={'flex flex-wrap gap-4'}>
         {getWorkoutsDateDescriptionQuery.data.map((exercise) => {
           return (

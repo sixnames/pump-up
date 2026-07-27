@@ -428,6 +428,10 @@ export const fieldLabels = {
   defaultSetsCount: {
     singular: 'Кількість підходів під час створення',
   },
+  suggestion: {
+    singular: 'Рекомендація',
+    plural: 'Рекомендації',
+  },
 
   // calendar
   calendar: {
