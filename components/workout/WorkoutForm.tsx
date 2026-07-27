@@ -40,6 +40,7 @@ function WorkoutSetFields({ remove, setIndex, fieldName }: WorkoutSetFieldsProps
       getBestSimilarWorkout({
         exerciseId: exercise?.id as string,
         setIndex,
+        currentWorkoutId: values.id,
       }),
   });
 

@@ -32,7 +32,7 @@ function WorkoutsDateContent({ day, enableSuggestions }: WorkoutsDateContentProp
   const groupIds = alwaysArray(day.exerciseGroups) as string[];
   const workoutIds = alwaysArray(day.workouts) as string[];
   const getWorkoutsOnDateQuery = useQuery({
-    queryKey: ['getWorkoutsList', user?.id, workoutIds],
+    queryKey: ['getWorkoutsList', user?.id, workoutIds, 'refetch'],
     queryFn: () => getWorkoutsOnDate(workoutIds),
     enabled: workoutIds.length > 0,
   });

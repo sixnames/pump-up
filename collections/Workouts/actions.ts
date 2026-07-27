@@ -10,6 +10,7 @@ import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
 import { ObjectId } from 'bson';
 import { Dictionary, groupBy, orderBy } from 'lodash';
+import { Where } from 'payload';
 
 export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
   key: 'getWorkoutsDateDescription',
@@ -171,6 +172,7 @@ export type WorkoutSet = NonNullable<WorkoutSets>[number];
 export interface GetBestSimilarWorkoutParams {
   exerciseId: string;
   setIndex: number;
+  currentWorkoutId?: string;
 }
 
 export const getBestSimilarWorkout = odSafeQuery<WorkoutSet | null, GetBestSimilarWorkoutParams>({
@@ -180,17 +182,25 @@ export const getBestSimilarWorkout = odSafeQuery<WorkoutSet | null, GetBestSimil
       return null;
     }
 
+    const where: Where = {
+      userId: {
+        equals: user.id,
+      },
+      exercise: {
+        equals: params.exerciseId,
+      },
+    };
+
+    if (params.currentWorkoutId) {
+      where.id = {
+        not_equals: params.currentWorkoutId,
+      };
+    }
+
     const data = await payload.find({
       collection: workoutsSlug,
       limit: 5,
-      where: {
-        userId: {
-          equals: user.id,
-        },
-        exercise: {
-          equals: params.exerciseId,
-        },
-      },
+      where,
     });
 
     const workouts = orderBy(data.docs, workoutFieldConfig.rating, SORT_DESC_STR);

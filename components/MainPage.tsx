@@ -17,7 +17,7 @@ export default function MainPage() {
   const date = new Date();
   const dayId = getDayId(date);
   const dayQuery = useQuery({
-    queryKey: ['day', dayId],
+    queryKey: ['day', dayId, 'refetch'],
     queryFn: async () => getTodayDay(dayId),
   });
 

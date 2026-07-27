@@ -16,7 +16,7 @@ export default function WorkoutsPage() {
   const { start } = useProgress();
   const { user } = useGlobalConfigContext();
   const getUserDaysQuery = useQuery({
-    queryKey: ['getUserDays', user?.id],
+    queryKey: ['getUserDays', user?.id, 'refetch'],
     queryFn: () => getUserDays(),
   });
 

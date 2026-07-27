@@ -7,12 +7,11 @@ import WorkoutForm from '@/components/workout/WorkoutForm';
 import { useOdMutation } from '@/hooks/useOdMutation';
 import { getDayId } from '@/lib/dateUtils';
 import { ExerciseGroup } from '@/payload-types';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ObjectId } from 'bson';
 import { useQueryState } from 'nuqs';
 
 export default function CreateWorkoutPage() {
-  const client = useQueryClient();
   const [exerciseId] = useQueryState('exerciseId');
   const exerciseQuery = useQuery({
     queryKey: ['exercise', exerciseId],
@@ -29,8 +28,8 @@ export default function CreateWorkoutPage() {
     redirectTo: () => {
       return '/';
     },
-    onSuccessCallback: async () => {
-      await client.invalidateQueries();
+    refetchQueryKeys: () => {
+      return ['refetch'];
     },
   });
 
