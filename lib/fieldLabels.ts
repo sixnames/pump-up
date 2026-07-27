@@ -432,6 +432,10 @@ export const fieldLabels = {
     singular: 'Рекомендація',
     plural: 'Рекомендації',
   },
+  field: {
+    singular: 'Поле',
+    plural: 'Поля',
+  },
 
   // calendar
   calendar: {

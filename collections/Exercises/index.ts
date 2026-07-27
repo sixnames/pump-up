@@ -38,7 +38,7 @@ export const Exercises: CollectionConfig = {
     },
     {
       name: exerciseFieldConfig.fields,
-      label: fieldLabels.exerciseGroup.singular.nominative,
+      label: fieldLabels.field.plural,
       type: 'select',
       hasMany: true,
       options: exerciseFieldOptions,
