@@ -9,7 +9,7 @@ import { fieldLabels } from '@/lib/fieldLabels';
 import { odSafeMutation, odSafeQuery } from '@/lib/safeAction';
 import { Exercise, ExerciseGroup, Workout, WorkoutSets } from '@/payload-types';
 import { ObjectId } from 'bson';
-import { groupBy, orderBy } from 'lodash';
+import { Dictionary, groupBy, orderBy } from 'lodash';
 
 export const getWorkoutsDateDescription = odSafeQuery<string, string[]>({
   key: 'getWorkoutsDateDescription',
@@ -47,15 +47,15 @@ interface GetWorkoutSuggestionsParams {
   addedExerciseIds: string[];
 }
 
-export const getWorkoutSuggestions = odSafeQuery<Exercise[], GetWorkoutSuggestionsParams>({
+export const getWorkoutSuggestions = odSafeQuery<Dictionary<Exercise[]>, GetWorkoutSuggestionsParams>({
   key: 'getWorkoutSuggestions',
   action: async ({ user, payload, params }) => {
     if (!user) {
-      return [];
+      return {};
     }
 
     if (params.addedExerciseIds.length < 1) {
-      return [];
+      return {};
     }
 
     const workoutsCollection = payload.db.collections[workoutsSlug];
@@ -104,7 +104,10 @@ export const getWorkoutSuggestions = odSafeQuery<Exercise[], GetWorkoutSuggestio
       },
     });
 
-    return exercises.docs;
+    return groupBy(exercises.docs, (exercise) => {
+      const group = exercise.group as ExerciseGroup | undefined;
+      return alwaysString(group?.label);
+    });
   },
 });
 

@@ -37,22 +37,29 @@ export default function WorkoutsDateSuggestions({
     return null;
   }
 
-  if (getWorkoutsDateDescriptionQuery.data.length < 1) {
+  if (Object.keys(getWorkoutsDateDescriptionQuery.data).length < 1) {
     return null;
   }
 
   return (
     <div className={'mb-6'}>
       <div className={'font-bold mb-4'}>{`${fieldLabels.suggestion.plural}:`}</div>
-      <div className={'flex flex-wrap gap-4'}>
-        {getWorkoutsDateDescriptionQuery.data.map((exercise) => {
-          return (
-            <Badge key={exercise.id} variant={'secondary'}>
-              <a href={`${urlConfig.app.links.createWorkout.url}?exerciseId=${exercise.id}`}>{exercise.label}</a>
-            </Badge>
-          );
-        })}
-      </div>
+      {Object.entries(getWorkoutsDateDescriptionQuery.data).map(([exerciseGroup, exercises]) => {
+        return (
+          <div className={'mb-6'} key={exerciseGroup}>
+            <div className={'font-medium mb-2'}>{`${exerciseGroup}:`}</div>
+            <div className={'flex flex-wrap gap-4'}>
+              {exercises.map((exercise) => {
+                return (
+                  <Badge key={exercise.id} variant={'secondary'}>
+                    <a href={`${urlConfig.app.links.createWorkout.url}?exerciseId=${exercise.id}`}>{exercise.label}</a>
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
