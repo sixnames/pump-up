@@ -64,8 +64,12 @@ export const Workouts: CollectionConfig = {
         }
         const exerciseGroup = exercise.group as ExerciseGroup;
         data.groupId = exerciseGroup?.id;
+        const user = req.user;
+        if (!user) {
+          return data;
+        }
 
-        const metrics = getWorkoutMetricValues(exercise, alwaysArray(workout.sets));
+        const metrics = getWorkoutMetricValues(exercise, alwaysArray(workout.sets), alwaysNumber(user.repsLimit));
         data.metrics = metrics;
         const totalRating = metrics.reduce((acc: number, item) => {
           return acc + alwaysNumber(item.value);

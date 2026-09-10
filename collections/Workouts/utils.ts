@@ -7,7 +7,7 @@ type Metric = {
   key: string;
   label: string;
   requiredFields: string[];
-  calculate: (sets: SetItem[]) => number | null;
+  calculate: (sets: SetItem[], repsLimit: number) => number | null;
 };
 
 export const workoutMetrics: Metric[] = [
@@ -15,9 +15,11 @@ export const workoutMetrics: Metric[] = [
     key: 'volume',
     label: 'Volume',
     requiredFields: ['weight', 'repetitions'],
-    calculate: (sets) => {
+    calculate: (sets, repsLimit) => {
       return sets.reduce((sum, set) => {
-        return sum + alwaysNumber(set.weight) * alwaysNumber(set.repetitions);
+        const repetitions = alwaysNumber(set.repetitions);
+        const reps = repetitions > repsLimit ? repsLimit : repetitions;
+        return sum + alwaysNumber(set.weight) * reps;
       }, 0);
     },
   },
@@ -25,10 +27,11 @@ export const workoutMetrics: Metric[] = [
     key: 'estimatedOneRepMax',
     label: 'Estimated 1RM',
     requiredFields: ['weight', 'repetitions'],
-    calculate: (sets) => {
+    calculate: (sets, repsLimit) => {
       const values = sets.map((set) => {
         const weight = alwaysNumber(set.weight);
-        const reps = alwaysNumber(set.repetitions);
+        const repetitions = alwaysNumber(set.repetitions);
+        const reps = repetitions > repsLimit ? repsLimit : repetitions;
 
         if (!weight || !reps) {
           return 0;
@@ -44,8 +47,12 @@ export const workoutMetrics: Metric[] = [
     key: 'totalReps',
     label: 'Total reps',
     requiredFields: ['repetitions'],
-    calculate: (sets) => {
-      return sets.reduce((sum, set) => sum + alwaysNumber(set.repetitions), 0);
+    calculate: (sets, repsLimit) => {
+      return sets.reduce((sum, set) => {
+        const repetitions = alwaysNumber(set.repetitions);
+        const reps = repetitions > repsLimit ? repsLimit : repetitions;
+        return sum + reps;
+      }, 0);
     },
   },
   {
@@ -73,7 +80,7 @@ export const workoutMetrics: Metric[] = [
   },
 ];
 
-export function getWorkoutMetricValues(exercise: Exercise, setsList: WorkoutSets) {
+export function getWorkoutMetricValues(exercise: Exercise, setsList: WorkoutSets, repsLimit: number) {
   const exerciseFields = alwaysArray(exercise.fields);
   const sets = alwaysArray(setsList);
 
@@ -85,7 +92,7 @@ export function getWorkoutMetricValues(exercise: Exercise, setsList: WorkoutSets
       return {
         key: metric.key,
         label: metric.label,
-        value: metric.calculate(sets),
+        value: metric.calculate(sets, repsLimit),
       };
     })
     .filter((metric) => metric.value !== null);

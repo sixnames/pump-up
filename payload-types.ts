@@ -240,6 +240,7 @@ export interface RoleCollection {
 export interface User {
   id: string;
   role?: (string | null) | Role;
+  repsLimit?: number | null;
   isAdmin?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -452,6 +453,7 @@ export interface RoleCollectionSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
+  repsLimit?: T;
   isAdmin?: T;
   updatedAt?: T;
   createdAt?: T;

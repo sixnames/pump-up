@@ -36,6 +36,12 @@ export const Users: CollectionConfig = {
       relationTo: rolesSlug,
       saveToJWT: true,
     },
+    {
+      name: userFieldConfig.repsLimit,
+      label: fieldLabels.repsLimit.singular,
+      type: 'number',
+      defaultValue: 10,
+    },
     BooleanField({
       name: userFieldConfig.isAdmin,
       label: fieldLabels.isAdmin.singular,

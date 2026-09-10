@@ -1034,4 +1034,7 @@ export const fieldLabels = {
     singular: 'Адміністратор',
     plural: 'Адміністратори',
   },
+  repsLimit: {
+    singular: 'Максимальна кількість повторень',
+  },
 } as const;

@@ -4,4 +4,5 @@ export const userFieldConfig = {
   updatedAt: 'updatedAt',
   role: 'role',
   isAdmin: 'isAdmin',
+  repsLimit: 'repsLimit',
 };
