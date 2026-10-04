@@ -1,6 +1,6 @@
 import { workoutFieldConfig } from '@/collections/Workouts/fieldConfig';
 import { getWorkoutMetricValues } from '@/collections/Workouts/utils';
-import { daysSlug, exercisesSlug, workoutsSlug } from '@/lib/collectionNames';
+import { daysSlug, exercisesSlug, usersSlug, workoutsSlug } from '@/lib/collectionNames';
 import { alwaysArray, alwaysNumber } from '@/lib/commonUtils';
 import { fieldLabels } from '@/lib/fieldLabels';
 import { Exercise, ExerciseGroup, Workout } from '@/payload-types';
@@ -64,7 +64,14 @@ export const Workouts: CollectionConfig = {
         }
         const exerciseGroup = exercise.group as ExerciseGroup;
         data.groupId = exerciseGroup?.id;
-        const user = req.user;
+        let user = req.user;
+        if (!user) {
+          user = await payload.findByID({
+            collection: usersSlug,
+            id: workout.userId,
+          });
+        }
+
         if (!user) {
           return data;
         }
