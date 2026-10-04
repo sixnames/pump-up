@@ -409,11 +409,6 @@ export const ukrainianAlphabet: string[] = [
   'я',
 ];
 
-// api
-export const DAY_EVENT_API_URL = `/api/docx/day-event`;
-export const DAY_EVENT_ZIP_API_URL = `/api/zip/day-event`;
-export const DAILY_REPORT_API_URL = `/api/xlsx/daily-report`;
-
 // permissions
 export const PERMISSION_ALLOW = 'allow';
 
